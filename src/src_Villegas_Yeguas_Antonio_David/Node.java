@@ -20,8 +20,7 @@ public class Node implements Comparable<Node> {
     public Node parent;
     public Vector2d position;
     public int id;
-
-    public StateObservation stateObs;
+    public int orientation = -1;
 
     public Node(Vector2d pos)
     {
@@ -29,6 +28,16 @@ public class Node implements Comparable<Node> {
         totalCost = 1.0f;
         parent = null;
         position = pos;
+        id = ((int)(position.x) * 100 + (int)(position.y));
+    }
+
+    public Node(Node otro)
+    {
+        estimatedCost = otro.estimatedCost;
+        totalCost = otro.totalCost;
+        parent = null;
+        position = new Vector2d( otro.position );
+        orientation = otro.orientation;
         id = ((int)(position.x) * 100 + (int)(position.y));
     }
 
@@ -44,14 +53,7 @@ public class Node implements Comparable<Node> {
     @Override
     public boolean equals(Object o)
     {
-        boolean equals = this.position.equals(((Node)o).position);
-
-        if (this.stateObs != null && ((Node)o).stateObs != null ){
-            equals = equals && this.stateObs.getAvatarOrientation().x == ((Node)o).stateObs.getAvatarOrientation().x &&
-                               this.stateObs.getAvatarOrientation().y == ((Node)o).stateObs.getAvatarOrientation().y;
-        }
-
-        return equals;
+        return this.position.equals(((Node)o).position);
     }
 
 
