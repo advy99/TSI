@@ -8,18 +8,22 @@ import tools.ElapsedCpuTimer;
 import tools.Vector2d;
 
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.PriorityQueue;
-import java.util.Stack;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class Agent extends AbstractPlayer{
 
+    static final int ID_GEMA = 6;
     Vector2d fescala;
     Vector2d portal;
     Stack<Types.ACTIONS> plan;
+    int gemas_a_obtener;
     int gemas_obtenidas;
+    ArrayList<Observation> gemas;
+    Stack<Node> camino_gemas;
+
+    boolean hay_riesgo;
+    boolean podemos_acabar;
 
 
     public Agent (StateObservation stateObs, ElapsedCpuTimer elapsedCpuTimer){
@@ -29,13 +33,15 @@ public class Agent extends AbstractPlayer{
 
         gemas_obtenidas = 0;
         plan = new Stack<>();
-
+        hay_riesgo = false;
+        podemos_acabar = true;
 
         //Se crea una lista de observaciones de portales, ordenada por cercania al avatar
         ArrayList<Observation>[] posiciones = stateObs.getPortalsPositions(stateObs.getAvatarPosition());
 
+
         // si no hay portales
-        if(posiciones[0].isEmpty()){
+        if(posiciones == null ){
             portal = null;
         } else {
             //Seleccionamos el portal mas proximo
@@ -43,53 +49,92 @@ public class Agent extends AbstractPlayer{
             portal = pixelToGrid(portal);
 
             // lista de diamantes, ordenada por cercania al avatar
-            // ArrayList<Observation>[] diamantes = stateObs.getResourcesPositions(stateObs.getAvatarPosition());
+            ArrayList<Observation>[] gemas_array = stateObs.getResourcesPositions(stateObs.getAvatarPosition());
 
-            // calculamos la ruta al portal
-            //calcularPlanPosPuertaAStar(stateObs, portal);
+            if (gemas_array != null){
+                gemas_a_obtener = 9;
+                podemos_acabar = false;
+                gemas = gemas_array[0];
+                camino_gemas = new Stack<>();
+                gemas_obtenidas = -1;
+
+                calcularCaminoGemas(stateObs);
+
+
+            }
         }
 
     }
 
-    public void init (StateObservation stateObs, ElapsedCpuTimer elapsedTImer){
-
-
-    }
-
-
     private Vector2d pixelToGrid( Vector2d pos){
         return  new Vector2d(pos.x / fescala.x, pos.y / fescala.y);
     }
+
+    public void init (StateObservation stateObs, ElapsedCpuTimer elapsedTImer){
+
+    }
+
+
+
 
     @Override
     public Types.ACTIONS act (StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
 
         Types.ACTIONS accion = Types.ACTIONS.ACTION_NIL;
 
-        // intentamos salir por el portal
-        if (portal != null){
-            calcularPlanPosPuertaAStar(stateObs, portal);
-            if (plan.size() > 0){
-                accion = plan.peek();
-                plan.pop();
-                System.out.println(accion.toString() + " " + stateObs.getAvatarOrientation().x + " " + stateObs.getAvatarOrientation().y);
-                System.out.println(pixelToGrid(stateObs.getAvatarPosition()));
-
-            }
+        if (hay_riesgo){
+            // comportamiento reactivo
 
         } else {
-            // no hay portal, intentamos sobrevivir los 2000 ticks
+            // comportamiento deliberativo
+
+            // intentamos salir por el portal
+            if (portal != null){
+
+                System.out.println(gemas_a_obtener + " " + gemas_obtenidas);
+                if (gemas_obtenidas == gemas_a_obtener){
+
+                    podemos_acabar = true;
+                }
+
+                //aunque sea comprobar dos veces lo mismo, no perdemos el tick para
+                //calcular y otro para ejecutar, calculamos y ejecutamos en el mismo
+                if (podemos_acabar && plan.empty()){
+                    calcularPlanAStar(stateObs, pixelToGrid(stateObs.getAvatarPosition()),portal);
+                } else if (plan.empty()){
+                    if (!gemas.isEmpty()){
+                        calcularPlanAStar(stateObs, pixelToGrid(stateObs.getAvatarPosition()), pixelToGrid(camino_gemas.peek().position) );
+                        camino_gemas.pop();
+                        gemas.remove(0);
+                        if (stateObs.getAvatarResources().get(ID_GEMA) != null){
+                            gemas_obtenidas = stateObs.getAvatarResources().get(ID_GEMA);
+                            stateObs.getResourcesPositions(stateObs.getAvatarPosition());
+                        }
+                    }
+
+                }
+
+                if (!plan.empty()){
+                    accion = plan.peek();
+                    plan.pop();
+
+                }
+
+            } else {
+                // no hay portal, intentamos sobrevivir los 2000 ticks
 
 
+            }
         }
+
 
 
         return accion;
     }
 
 
-    private void calcularPlanPosPuertaAStar(StateObservation stateObs, Vector2d dest){
-        Node inicio = new Node(pixelToGrid(stateObs.getAvatarPosition()));
+    private double calcularPlanAStar(StateObservation stateObs, Vector2d ini ,Vector2d dest){
+        Node inicio = new Node(ini);
         inicio.orientation = orientacion(stateObs.getAvatarOrientation());
 
         Node fin = new Node(dest);
@@ -105,7 +150,7 @@ public class Agent extends AbstractPlayer{
         abiertos.add(inicio);
 
         Node solucion = null;
-        Node mejor_abiertos = null;
+        Node mejor_abiertos = inicio;
 
         boolean es_solucion = false;
 
@@ -175,7 +220,7 @@ public class Agent extends AbstractPlayer{
                                     abiertos.add(hijo);
                                     double p1 = ya_esta.totalCost + ya_esta.estimatedCost;
                                     double p2 = hijo.totalCost + hijo.estimatedCost;
-                                    System.out.println("Asdaf:" + p1 + " " + p2);
+                                    //System.out.println("Asdaf:" + p1 + " " + p2);
                                 }
                             }
 
@@ -209,8 +254,10 @@ public class Agent extends AbstractPlayer{
 
         }
 
+        // si es el portal calculamos el plan
         calcularPlan(solucion);
 
+        return solucion.totalCost;
 
     }
 
@@ -281,4 +328,79 @@ public class Agent extends AbstractPlayer{
         }
     }
 
+    private void calcularCaminoGemas(StateObservation stateObs){
+
+        PriorityQueue<Triplet<Double, ArrayList<Observation>, Node>> caminos = new PriorityQueue<>();
+
+        Double[][] distancias = new Double[gemas.size()][gemas.size()];
+
+        for (int i = 0; i < gemas.size(); i++){
+            for (int j = i; j < gemas.size(); j++){
+                distancias[i][j] = calcularPlanAStar(stateObs, pixelToGrid(gemas.get(i).position), pixelToGrid(gemas.get(j).position) );
+                distancias[j][i] = distancias[i][j];
+            }
+            distancias[i][i] = 0.0;
+
+        }
+
+
+        /*
+        // insertamos los caminos iniciales
+        for (Observation gema : gemas){
+            Node g = new Node(pixelToGrid(gema.position));
+
+            g.parent = null;
+
+            ArrayList<Observation> por_probar = new ArrayList<>(gemas);
+
+            por_probar.remove(gema);
+
+            Double peso = calcularPlanAStar(stateObs, pixelToGrid(stateObs.getAvatarPosition()), g.position);
+
+            // heuristica(new Node(stateObs.getAvatarPosition()), g);//
+
+            caminos.add(new Triplet(peso, por_probar, g));
+        }
+
+
+        Triplet<Double, ArrayList<Observation>, Node> elemento = caminos.poll();
+
+        while(elemento.getSecond().size() > gemas.size() - 10){
+
+
+            for (Observation gem : elemento.getSecond()){
+
+                Node nuevo = new Node(pixelToGrid(gem.position));
+
+                Double nuevo_peso = elemento.getFirst() + calcularPlanAStar(stateObs, elemento.getThird().position, pixelToGrid(gem.position));
+
+                //heuristica(elemento.getThird(), nuevo);//
+
+                nuevo.parent = elemento.getThird();
+                ArrayList<Observation> por_explorar = new ArrayList<>(elemento.getSecond());
+                por_explorar.remove(gem);
+
+                Triplet<Double, ArrayList<Observation>, Node> n_elemento = new Triplet(nuevo_peso, por_explorar, nuevo);
+
+                caminos.add(n_elemento);
+
+            }
+
+            elemento = caminos.poll();
+        }
+
+        camino_gemas = new Stack<>();
+        Node n = new Node(elemento.getThird());
+
+        while (n != null){
+
+            camino_gemas.push(n);
+
+            n = n.parent;
+        }*/
+
+    }
+
 }
+
+
