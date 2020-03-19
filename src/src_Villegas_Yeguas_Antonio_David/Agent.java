@@ -6,6 +6,7 @@ import core.player.AbstractPlayer;
 import ontology.Types;
 import tools.ElapsedCpuTimer;
 import tools.Vector2d;
+import tools.com.google.gson.internal.bind.ArrayTypeAdapter;
 
 
 import java.lang.reflect.Array;
@@ -91,7 +92,7 @@ public class Agent extends AbstractPlayer{
             // intentamos salir por el portal
             if (portal != null){
 
-                System.out.println(gemas_a_obtener + " " + gemas_obtenidas);
+                //System.out.println(gemas_a_obtener + " " + gemas_obtenidas);
                 if (gemas_obtenidas == gemas_a_obtener){
 
                     podemos_acabar = true;
@@ -330,7 +331,6 @@ public class Agent extends AbstractPlayer{
 
     private void calcularCaminoGemas(StateObservation stateObs){
 
-        PriorityQueue<Triplet<Double, ArrayList<Observation>, Node>> caminos = new PriorityQueue<>();
 
         Double[][] distancias = new Double[gemas.size()][gemas.size()];
 
@@ -343,8 +343,49 @@ public class Agent extends AbstractPlayer{
 
         }
 
+        PriorityQueue<Pair<ArrayList<Integer>, Double>> caminos = new PriorityQueue<>();
+        //ArrayList<Double> peso_caminos = new ArrayList<>();
+
+        for (int i = 0; i < gemas.size(); i++){
+            ArrayList<Integer> ini = new ArrayList<>();
+            ini.add(i);
+            caminos.add(new Pair(ini, 0.0));
+            //caminos.get(i).first.add(i);
+            //peso_caminos.add();
+        }
+
+
+        Boolean he_encontrado_mejor = false;
+        Pair<ArrayList<Integer>, Double> mejor ;
+
+        do {
+
+            mejor = caminos.poll();
+
+            if (mejor.first.size() == 10){
+                he_encontrado_mejor = true;
+            } else {
+                for (int i = 0; i < gemas.size(); i++){
+                    if (!mejor.first.contains(i)){
+                        ArrayList<Integer> n_camino = new ArrayList<>(mejor.first);
+                        n_camino.add(i);
+                        caminos.add(new Pair(n_camino, mejor.second + distancias[i][n_camino.get(n_camino.size() - 2)]));
+                    }
+                }
+            }
+
+        } while(!he_encontrado_mejor);
+
+        camino_gemas = new Stack<>();
+        for (int i = 0; i < mejor.first.size(); i++){
+            Node nuevo = new Node( gemas.get(mejor.first.get(i)).position );
+            camino_gemas.add(nuevo);
+        }
 
         /*
+
+        PriorityQueue<Triplet<Double, ArrayList<Observation>, Node>> caminos = new PriorityQueue<>();
+
         // insertamos los caminos iniciales
         for (Observation gema : gemas){
             Node g = new Node(pixelToGrid(gema.position));
