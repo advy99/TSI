@@ -26,6 +26,8 @@ public class Agent extends AbstractPlayer{
     boolean hay_riesgo;
     boolean podemos_acabar;
 
+    Double[][] mapa_riesgo;
+
 
     public Agent (StateObservation stateObs, ElapsedCpuTimer elapsedCpuTimer){
         fescala = new Vector2d(stateObs.getWorldDimension().width / stateObs.getObservationGrid().length ,
@@ -36,6 +38,18 @@ public class Agent extends AbstractPlayer{
         plan = new Stack<>();
         hay_riesgo = false;
         podemos_acabar = true;
+
+        Vector2d tam_mundo = new Vector2d (stateObs.getWorldDimension().width, stateObs.getWorldDimension().height);
+
+        tam_mundo = pixelToGrid(tam_mundo);
+
+        mapa_riesgo = new Double[(int)tam_mundo.x][(int)tam_mundo.y];
+
+        // inicializamos el riesgo, basicamente zonas de riesgo fijo (muros)
+        inicializarRiesgo(stateObs);
+
+        // calculamos el riesgo en este momento de la partida
+        calcularRiesgo(stateObs);
 
         //Se crea una lista de observaciones de portales, ordenada por cercania al avatar
         ArrayList<Observation>[] posiciones = stateObs.getPortalsPositions(stateObs.getAvatarPosition());
@@ -57,7 +71,7 @@ public class Agent extends AbstractPlayer{
                 podemos_acabar = false;
                 gemas = gemas_array[0];
                 camino_gemas = new Stack<>();
-                gemas_obtenidas = -1;
+                gemas_obtenidas = 0;
 
                 calcularCaminoGemas(stateObs);
 
@@ -93,8 +107,7 @@ public class Agent extends AbstractPlayer{
             if (portal != null){
 
                 //System.out.println(gemas_a_obtener + " " + gemas_obtenidas);
-                if (gemas_obtenidas == gemas_a_obtener){
-
+                if (gemas_obtenidas >= gemas_a_obtener){
                     podemos_acabar = true;
                 }
 
@@ -382,66 +395,89 @@ public class Agent extends AbstractPlayer{
             camino_gemas.add(nuevo);
         }
 
-        /*
-
-        PriorityQueue<Triplet<Double, ArrayList<Observation>, Node>> caminos = new PriorityQueue<>();
-
-        // insertamos los caminos iniciales
-        for (Observation gema : gemas){
-            Node g = new Node(pixelToGrid(gema.position));
-
-            g.parent = null;
-
-            ArrayList<Observation> por_probar = new ArrayList<>(gemas);
-
-            por_probar.remove(gema);
-
-            Double peso = calcularPlanAStar(stateObs, pixelToGrid(stateObs.getAvatarPosition()), g.position);
-
-            // heuristica(new Node(stateObs.getAvatarPosition()), g);//
-
-            caminos.add(new Triplet(peso, por_probar, g));
-        }
-
-
-        Triplet<Double, ArrayList<Observation>, Node> elemento = caminos.poll();
-
-        while(elemento.getSecond().size() > gemas.size() - 10){
-
-
-            for (Observation gem : elemento.getSecond()){
-
-                Node nuevo = new Node(pixelToGrid(gem.position));
-
-                Double nuevo_peso = elemento.getFirst() + calcularPlanAStar(stateObs, elemento.getThird().position, pixelToGrid(gem.position));
-
-                //heuristica(elemento.getThird(), nuevo);//
-
-                nuevo.parent = elemento.getThird();
-                ArrayList<Observation> por_explorar = new ArrayList<>(elemento.getSecond());
-                por_explorar.remove(gem);
-
-                Triplet<Double, ArrayList<Observation>, Node> n_elemento = new Triplet(nuevo_peso, por_explorar, nuevo);
-
-                caminos.add(n_elemento);
-
-            }
-
-            elemento = caminos.poll();
-        }
-
-        camino_gemas = new Stack<>();
-        Node n = new Node(elemento.getThird());
-
-        while (n != null){
-
-            camino_gemas.push(n);
-
-            n = n.parent;
-        }*/
 
     }
 
+
+    private void calcularRiesgo(StateObservation stateObs){
+        ArrayList<Observation>[] NPC = stateObs.getNPCPositions();
+
+        // inicializamos valores básicos, en general riesgo 0, muros riesgo infinito
+        for (int i = 0; i < mapa_riesgo.length; i++){
+            for (int j = 0; j < mapa_riesgo[i].length; j++){
+                if (!esObstaculo(stateObs, new Node( new Vector2d(i,j) ) ) ){
+                    mapa_riesgo[i][j] = 0.0;
+                }
+            }
+        }
+
+
+        //añadimos riesgo a los muros
+
+        if (NPC != null){
+            ArrayList<Observation> enemigos = NPC[0];
+
+            for (Observation enemigo : enemigos){
+
+            }
+        }
+    }
+
+
+    private void inicializarRiesgo(StateObservation stateObs){
+
+        // ponemos el mapa vacio
+        for (int i = 0; i < mapa_riesgo.length; i++) {
+            for (int j = 0; j < mapa_riesgo[i].length; j++) {
+                mapa_riesgo[i][j] = 0.0;
+            }
+        }
+
+        ArrayList<Observation>[] w = stateObs.getImmovablePositions();
+
+        if (w != null){
+            ArrayList<Observation> muros = w[0];
+
+            // para todos los muros
+            for (Observation muro : muros){
+                Vector2d posicion = new Vector2d(pixelToGrid(new Vector2d(muro.position)));
+
+                for (int k = 2; k >= -2; k--){
+                    for (int l = 2; l >= -2; l--){
+                        int x = (int)posicion.x + k;
+                        int y = (int)posicion.y + l;
+                        if (0 <= x && x < mapa_riesgo.length && 0 <= y && y < mapa_riesgo[x].length){
+                            if ( !esObstaculo(stateObs, new Node( new Vector2d(x,y) ) ) ){
+                                //int suma = Math.abs(k) + Math.abs(l);
+                                if ( Math.abs(l) < 2 && Math.abs(k) < 2){
+                                    mapa_riesgo[x][y] += 2.0;
+                                } else {
+                                    mapa_riesgo[x][y] += 1.0;
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+
+                mapa_riesgo[(int)posicion.x][(int)posicion.y] = 11.0;
+
+            }
+
+        }
+
+
+        for (int i = 0; i < mapa_riesgo.length; i++) {
+            for (int j = 0; j < mapa_riesgo[i].length; j++) {
+                System.out.print(mapa_riesgo[i][j] + " ");
+            }
+            System.out.println("");
+        }
+
+
+    }
 }
 
 
