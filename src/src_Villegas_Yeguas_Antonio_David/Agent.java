@@ -72,23 +72,25 @@ public class Agent extends AbstractPlayer{
                 gemas = gemas_array[0];
                 camino_gemas = new Stack<>();
                 gemas_obtenidas = 0;
-
                 calcularCaminoGemas(stateObs);
-
 
             }
         }
 
     }
 
+
+
+    public void init (StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
+        if (gemas != null){
+            //calcularCaminoGemas(stateObs);
+
+        }
+    }
+
     private Vector2d pixelToGrid( Vector2d pos){
         return  new Vector2d(pos.x / fescala.x, pos.y / fescala.y);
     }
-
-    public void init (StateObservation stateObs, ElapsedCpuTimer elapsedTImer){
-
-    }
-
 
 
 
@@ -97,8 +99,12 @@ public class Agent extends AbstractPlayer{
 
         Types.ACTIONS accion = Types.ACTIONS.ACTION_NIL;
 
+
+        hay_riesgo = calcularRiesgo(stateObs);
+
         if (hay_riesgo){
             // comportamiento reactivo
+            System.out.println("hay_riesgo");
 
         } else {
             // comportamiento deliberativo
@@ -122,7 +128,6 @@ public class Agent extends AbstractPlayer{
                         gemas.remove(0);
                         if (stateObs.getAvatarResources().get(ID_GEMA) != null){
                             gemas_obtenidas = stateObs.getAvatarResources().get(ID_GEMA);
-                            stateObs.getResourcesPositions(stateObs.getAvatarPosition());
                         }
                     }
 
@@ -226,15 +231,14 @@ public class Agent extends AbstractPlayer{
                             abiertos.add(hijo);
 
                         } else {
+
                             if (abiertos.contains(hijo)){
                                 ArrayList<Node> abiertos_array= new ArrayList<Node>(Arrays.asList(abiertos.toArray(new Node[abiertos.size()])));
                                 Node ya_esta = abiertos_array.get(abiertos_array.indexOf(hijo));
                                 if (ya_esta.totalCost + ya_esta.estimatedCost > hijo.totalCost + hijo.estimatedCost){
                                     abiertos.remove(ya_esta);
                                     abiertos.add(hijo);
-                                    double p1 = ya_esta.totalCost + ya_esta.estimatedCost;
-                                    double p2 = hijo.totalCost + hijo.estimatedCost;
-                                    //System.out.println("Asdaf:" + p1 + " " + p2);
+
                                 }
                             }
 
@@ -268,10 +272,13 @@ public class Agent extends AbstractPlayer{
 
         }
 
-        // si es el portal calculamos el plan
-        calcularPlan(solucion);
+        if (solucion != null) {
+            calcularPlan(solucion);
 
-        return solucion.totalCost;
+            return solucion.totalCost;
+        } else {
+            return -1;
+        }
 
     }
 
@@ -375,11 +382,15 @@ public class Agent extends AbstractPlayer{
 
             mejor = caminos.poll();
 
-            if (mejor.first.size() == 10){
+            if (mejor == null){
+                System.out.println("Esto nunca debería pasar, el mapa está mal");
+                System.out.println("Deberia tener al menos 10 gemas accesibles");
+                he_encontrado_mejor = true;
+            } else if (mejor.first.size() == 10){
                 he_encontrado_mejor = true;
             } else {
                 for (int i = 0; i < gemas.size(); i++){
-                    if (!mejor.first.contains(i)){
+                    if (!mejor.first.contains(i) && distancias[i][mejor.first.get(mejor.first.size()-1)] != -1){
                         ArrayList<Integer> n_camino = new ArrayList<>(mejor.first);
                         n_camino.add(i);
                         caminos.add(new Pair(n_camino, mejor.second + distancias[i][n_camino.get(n_camino.size() - 2)]));
@@ -389,17 +400,18 @@ public class Agent extends AbstractPlayer{
 
         } while(!he_encontrado_mejor);
 
-        camino_gemas = new Stack<>();
-        for (int i = 0; i < mejor.first.size(); i++){
-            Node nuevo = new Node( gemas.get(mejor.first.get(i)).position );
-            camino_gemas.add(nuevo);
-        }
 
+        camino_gemas = new Stack<>();
+        if (mejor != null)
+            for (int i = 0; i < mejor.first.size(); i++){
+                Node nuevo = new Node( gemas.get(mejor.first.get(i)).position );
+                camino_gemas.add(nuevo);
+            }
 
     }
 
 
-    private void calcularRiesgo(StateObservation stateObs){
+    private boolean calcularRiesgo(StateObservation stateObs){
         ArrayList<Observation>[] NPC = stateObs.getNPCPositions();
 
         // inicializamos valores básicos, en general riesgo 0, muros riesgo infinito
@@ -419,7 +431,7 @@ public class Agent extends AbstractPlayer{
                         int x = (int)posicion.x + k;
                         int y = (int)posicion.y + l;
                         if (0 <= x && x < mapa_riesgo.length && 0 <= y && y < mapa_riesgo[x].length){
-                            if ( !esObstaculo(stateObs, new Node( new Vector2d(x,y) ) ) ){
+                            if ( !mapa_riesgo[x][y].equals(Double.MAX_VALUE) && !esObstaculo(stateObs, new Node( new Vector2d(x,y) ) ) ){
                                 //int suma = Math.abs(k) + Math.abs(l);
                                 if ( Math.abs(l) < 2 && Math.abs(k) < 2){
                                     mapa_riesgo[x][y] += 2.5;
@@ -442,12 +454,51 @@ public class Agent extends AbstractPlayer{
             }
         }
 
+        // intentamos ir a por las gemas, quitando riesgo al rededor de estas
+        ArrayList<Observation>[] GEM = stateObs.getResourcesPositions();
+        if (GEM != null){
+            ArrayList<Observation> gemas_por_recoger = GEM[0];
+
+            for (Observation gema : gemas_por_recoger){
+                Vector2d posicion = new Vector2d(pixelToGrid(new Vector2d(gema.position)));
+
+                for (int k = 3; k >= -3; k--){
+                    for (int l = 3; l >= -3; l--){
+                        int x = (int)posicion.x + k;
+                        int y = (int)posicion.y + l;
+                        if (0 <= x && x < mapa_riesgo.length && 0 <= y && y < mapa_riesgo[x].length){
+                            if ( !mapa_riesgo[x][y].equals(Double.MAX_VALUE) && !esObstaculo(stateObs, new Node( new Vector2d(x,y) ) ) ){
+                                //int suma = Math.abs(k) + Math.abs(l);
+                                if ( Math.abs(l) < 2 && Math.abs(k) < 2){
+                                    mapa_riesgo[x][y] -= 1.5;
+                                } else if ( Math.abs(l) < 3 && Math.abs(k) < 3){
+                                    mapa_riesgo[x][y] -= 1.0;
+                                } else {
+                                    mapa_riesgo[x][y] -= 0.5;
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+
+
+
+            }
+        }
+
         /*for (int i = 0; i < mapa_riesgo.length; i++) {
             for (int j = 0; j < mapa_riesgo[i].length; j++) {
                 System.out.print(mapa_riesgo[i][j] + " ");
             }
             System.out.println("");
         }*/
+
+        Vector2d pos_personaje = new Vector2d(pixelToGrid(stateObs.getAvatarPosition()) ) ;
+
+        return mapa_riesgo[(int)pos_personaje.x][(int)pos_personaje.y] > 16.0;
 
     }
 
@@ -496,13 +547,13 @@ public class Agent extends AbstractPlayer{
 
         }
 
-        /*
-        for (int i = 0; i < mapa_riesgo.length; i++) {
-            for (int j = 0; j < mapa_riesgo[i].length; j++) {
+
+        for (int i = 0; i < mapa_riesgo_base.length; i++) {
+            for (int j = 0; j < mapa_riesgo_base[i].length; j++) {
                 System.out.print(mapa_riesgo_base[i][j] + " ");
             }
             System.out.println("");
-        }*/
+        }
 
 
     }
