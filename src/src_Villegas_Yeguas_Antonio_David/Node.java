@@ -53,7 +53,7 @@ public class Node implements Comparable<Node> {
     @Override
     public boolean equals(Object o)
     {
-        return this.position.equals(((Node)o).position);
+        return this.position.equals(((Node)o).position) && ((Node) o).orientation == this.orientation;
     }
 
 
