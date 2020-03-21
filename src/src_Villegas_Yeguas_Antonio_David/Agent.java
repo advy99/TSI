@@ -26,7 +26,7 @@ public class Agent extends AbstractPlayer{
     boolean hay_riesgo;
     boolean podemos_acabar;
 
-    Double[][] mapa_riesgo;
+    Double[][] mapa_riesgo_base;
 
 
     public Agent (StateObservation stateObs, ElapsedCpuTimer elapsedCpuTimer){
@@ -43,7 +43,7 @@ public class Agent extends AbstractPlayer{
 
         tam_mundo = pixelToGrid(tam_mundo);
 
-        mapa_riesgo = new Double[(int)tam_mundo.x][(int)tam_mundo.y];
+        mapa_riesgo_base = new Double[(int)tam_mundo.x][(int)tam_mundo.y];
 
         // inicializamos el riesgo, basicamente zonas de riesgo fijo (muros)
         inicializarRiesgo(stateObs);
@@ -403,14 +403,8 @@ public class Agent extends AbstractPlayer{
         ArrayList<Observation>[] NPC = stateObs.getNPCPositions();
 
         // inicializamos valores básicos, en general riesgo 0, muros riesgo infinito
-        for (int i = 0; i < mapa_riesgo.length; i++){
-            for (int j = 0; j < mapa_riesgo[i].length; j++){
-                if (!esObstaculo(stateObs, new Node( new Vector2d(i,j) ) ) ){
-                    mapa_riesgo[i][j] = 0.0;
-                }
-            }
-        }
 
+        Double[][] mapa_riesgo = mapa_riesgo_base.clone();
 
         //añadimos riesgo a los muros
 
@@ -418,18 +412,52 @@ public class Agent extends AbstractPlayer{
             ArrayList<Observation> enemigos = NPC[0];
 
             for (Observation enemigo : enemigos){
+                Vector2d posicion = new Vector2d(pixelToGrid(new Vector2d(enemigo.position)));
+
+                for (int k = 3; k >= -3; k--){
+                    for (int l = 3; l >= -3; l--){
+                        int x = (int)posicion.x + k;
+                        int y = (int)posicion.y + l;
+                        if (0 <= x && x < mapa_riesgo.length && 0 <= y && y < mapa_riesgo[x].length){
+                            if ( !esObstaculo(stateObs, new Node( new Vector2d(x,y) ) ) ){
+                                //int suma = Math.abs(k) + Math.abs(l);
+                                if ( Math.abs(l) < 2 && Math.abs(k) < 2){
+                                    mapa_riesgo[x][y] += 2.5;
+                                } else if ( Math.abs(l) < 3 && Math.abs(k) < 3){
+                                    mapa_riesgo[x][y] += 2.0;
+                                } else {
+                                    mapa_riesgo[x][y] += 1.5;
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+
+                mapa_riesgo[(int)posicion.x][(int)posicion.y] = Double.MAX_VALUE;
+
 
             }
         }
+
+        /*for (int i = 0; i < mapa_riesgo.length; i++) {
+            for (int j = 0; j < mapa_riesgo[i].length; j++) {
+                System.out.print(mapa_riesgo[i][j] + " ");
+            }
+            System.out.println("");
+        }*/
+
     }
 
 
     private void inicializarRiesgo(StateObservation stateObs){
 
         // ponemos el mapa vacio
-        for (int i = 0; i < mapa_riesgo.length; i++) {
-            for (int j = 0; j < mapa_riesgo[i].length; j++) {
-                mapa_riesgo[i][j] = 0.0;
+        for (int i = 0; i < mapa_riesgo_base.length; i++) {
+            for (int j = 0; j < mapa_riesgo_base[i].length; j++) {
+                mapa_riesgo_base[i][j] = 0.0;
             }
         }
 
@@ -446,13 +474,13 @@ public class Agent extends AbstractPlayer{
                     for (int l = 2; l >= -2; l--){
                         int x = (int)posicion.x + k;
                         int y = (int)posicion.y + l;
-                        if (0 <= x && x < mapa_riesgo.length && 0 <= y && y < mapa_riesgo[x].length){
+                        if (0 <= x && x < mapa_riesgo_base.length && 0 <= y && y < mapa_riesgo_base[x].length){
                             if ( !esObstaculo(stateObs, new Node( new Vector2d(x,y) ) ) ){
                                 //int suma = Math.abs(k) + Math.abs(l);
                                 if ( Math.abs(l) < 2 && Math.abs(k) < 2){
-                                    mapa_riesgo[x][y] += 2.0;
+                                    mapa_riesgo_base[x][y] += 1.0;
                                 } else {
-                                    mapa_riesgo[x][y] += 1.0;
+                                    mapa_riesgo_base[x][y] += 0.5;
                                 }
 
                             }
@@ -462,19 +490,19 @@ public class Agent extends AbstractPlayer{
                     }
                 }
 
-                mapa_riesgo[(int)posicion.x][(int)posicion.y] = 11.0;
+                mapa_riesgo_base[(int)posicion.x][(int)posicion.y] = Double.MAX_VALUE;
 
             }
 
         }
 
-
+        /*
         for (int i = 0; i < mapa_riesgo.length; i++) {
             for (int j = 0; j < mapa_riesgo[i].length; j++) {
-                System.out.print(mapa_riesgo[i][j] + " ");
+                System.out.print(mapa_riesgo_base[i][j] + " ");
             }
             System.out.println("");
-        }
+        }*/
 
 
     }
