@@ -1,3 +1,19 @@
 # ignorar todo menos la carpeta de src propia
-.
+.*
+clients/
+doc/
+examples/
+logs/
+out/
+sprites/
+src/core/
+src/ontology/
+src/testing/
+src/tools/
+src/tracks/
+src/source_list.txt
+*.txt
+*.jar
+*.iml
+*.md
 !src/src_Villegas_Yeguas_Antonio_David
