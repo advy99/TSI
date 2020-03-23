@@ -84,7 +84,9 @@ public class Agent extends AbstractPlayer{
                 //System.out.println(elapsedCpuTimer.remainingTimeMillis());
 
             } else {
-                siempre_hay_riesgo = true;
+                if (gemas_a_obtener != 0){
+                    siempre_hay_riesgo = true;
+                }
             }
         }
 
