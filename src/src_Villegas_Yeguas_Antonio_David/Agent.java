@@ -79,7 +79,7 @@ public class Agent extends AbstractPlayer{
                 siempre_hay_riesgo = false;
                 //System.out.println(elapsedCpuTimer.elapsedMillis());
                 //System.out.println(elapsedCpuTimer.remainingTimeMillis());
-                calcularCaminoGemas(stateObs);
+                calcularCaminoGemas(stateObs, gemas_a_obtener);
                 //System.out.println(elapsedCpuTimer.elapsedMillis());
                 //System.out.println(elapsedCpuTimer.remainingTimeMillis());
 
@@ -115,7 +115,7 @@ public class Agent extends AbstractPlayer{
         if (hay_riesgo || siempre_hay_riesgo){
             // comportamiento reactivo
             Vector2d pos = new Vector2d(pixelToGrid(stateObs.getAvatarPosition()));
-            System.out.println("hay_riesgo: " + mapa_riesgo_base[(int)pos.x][(int)pos.y] + " " + mapa_riesgo[(int)pos.x][(int)pos.y]);
+            //System.out.println("hay_riesgo: " + mapa_riesgo_base[(int)pos.x][(int)pos.y] + " " + mapa_riesgo[(int)pos.x][(int)pos.y]);
             me_he_movido_riesgo = true;
 
             accion = calcularAccionRiesgo(stateObs);
@@ -149,8 +149,15 @@ public class Agent extends AbstractPlayer{
 
                 } else if (plan.empty()){
                     if (!gemas.isEmpty() && !camino_gemas.isEmpty()){
+
                         if (me_he_movido_riesgo){
                             me_he_movido_riesgo = false;
+
+                            // con menos de 10 gemas soy capaz de recalcular en menos de 40ms
+                            if (gemas_a_obtener - gemas_obtenidas < 10) {
+                                gemas = stateObs.getResourcesPositions(stateObs.getAvatarPosition())[0];
+                                calcularCaminoGemas(stateObs, gemas_a_obtener - gemas_obtenidas);
+                            }
                         } else {
                             camino_gemas.pop();
                             gemas.remove(0);
@@ -379,7 +386,7 @@ public class Agent extends AbstractPlayer{
         }
     }
 
-    private void calcularCaminoGemas(StateObservation stateObs){
+    private void calcularCaminoGemas(StateObservation stateObs, int num_gem){
 
 
         Double[][] distancias = new Double[gemas.size() + 2][gemas.size() + 2];
@@ -430,10 +437,10 @@ public class Agent extends AbstractPlayer{
                 System.out.println("Esto nunca debería pasar, el mapa está mal");
                 System.out.println("Deberia tener al menos 10 gemas accesibles");
                 he_encontrado_mejor = true;
-            } else if (mejor.first.size() >= 10){
+            } else if (mejor.first.size() >= num_gem){
                 //he_encontrado_mejor = true;
                 // si tenemos 11, ya esta el portal
-                if (mejor.first.size() >= 11){
+                if (mejor.first.size() >= num_gem + 1){
                     he_encontrado_mejor = true;
                 } else {
                     ArrayList<Integer> n_camino = new ArrayList<>(mejor.first);
@@ -524,7 +531,7 @@ public class Agent extends AbstractPlayer{
             }
         }
 
-        /*
+
         // intentamos ir a por las gemas, quitando riesgo al rededor de estas
         ArrayList<Observation>[] GEM = stateObs.getResourcesPositions();
         if (GEM != null){
@@ -558,7 +565,7 @@ public class Agent extends AbstractPlayer{
 
 
             }
-        }*/
+        }
 
         /*for (int i = 0; i < mapa_riesgo.length; i++) {
             for (int j = 0; j < mapa_riesgo[i].length; j++) {
