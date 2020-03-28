@@ -172,17 +172,7 @@ Técnicas de Búsqueda Heurística  \hspace{0.05cm} }
 
 Para esta práctica se nos pide desarrollar un agente que juegue al juego \"Boulder Dash\", videojuego de 1984 para las computadores Atari. Simularemos este juego a través del entorno de desarrollo GVGAI, desarrollado en Java. Este entorno de desarrollo se caracteriza por ser una IA que juega a juegos genéricos, donde el objetivo es conseguir ciertos materiales, y cuando se obtengan dichos materiales salir por una puerta, todo esto evitando enemigos (si los hubiera). El juego en el que nos centraremos, ``Boulderdash'', tiene el mismo objetivo aunque para el desarrollo de la práctica se nos plantean algunas variaciones que veremos más adelante.
 
-El juego se desarrolla en un mapa cuadriculado para nuestro personaje (más adelante veremos que los enemigos tienen una forma distinta de moverse). Los movimientos que podrá realizar serán:
-
-\begin{itemize}
-	\item Moverse hacia arriba
-	\item Moverse hacia abajo
-	\item Moverse hacia la derecha
-	\item Moverse hacia la izquierda
-	\item No hacer nada
-\end{itemize}
-
-Además de esta acciones, si el personaje tiene que girarse, utilizará una acción para esto, es decir, si esta mirando hacia la derecha y quiere ir a la izquierda, necesitará dos ordenes de moverse a la izquierda, una para girarse y otra para realizar el movimiento.
+El juego se desarrolla en un mapa cuadriculado para nuestro personaje (más adelante veremos que los enemigos tienen una forma distinta de moverse). Los movimientos posibles serán moverse hacia arriba, abajo, izquierda y derecha. Además de esta acciones, si el personaje tiene que girarse, utilizará una acción para esto, es decir, si esta mirando hacia la derecha y quiere ir a la izquierda, necesitará dos ordenes de moverse a la izquierda, una para girarse y otra para realizar el movimiento.
 
 Nuestro agente tendrá un segundo inicial para realizar cálculos a modo de preparación', tras eso, deberá responder con una de estas acciones en menos de 40ms, si tarda entre 40ms y 50ms automáticamente responderá con la acción de no hacer nada, y en caso de tardar más de 50ms el agente quedará descalificado y perderá.
 
@@ -340,7 +330,7 @@ Para seleccionar los nodos uso la estrategia del algoritmo de Dijkstra, el que t
 
 He pensado en como mejorar este algoritmo, pero tras darle muchas vueltas no se me ocurre ninguna heurística que funcione a la hora de escoger que camino puede ser mejor que otro, ya que todas las que he probado (distancia entre una secuencia aleatoria de entre las gemas restantes, distancia de la última gema al portal multiplicado por el número de gemas restantes, distancia más grande de la matriz por número restante de gemas, entre otras) me daban peores resultados que un greedy simple, por lo que simplemente he dejado el algoritmo de esta forma, ya que con el segundo del constructor es capaz de calcularlo en todos los mapas que he probado, pero con una condición. Esta condición es que tenga menos de 12 gemas, si el mapa tiene 15, el límite superior con el que se corrige, tarda demasiado.
 
-Esto lo he solucionado cortando el vector de gemas a doce, con las doce más cercanas al jugador (usando el método \texttt{getResourcePositions()}), ya que podemos suponer que esas gemas son las más prometedoras.
+Esto lo he solucionado usando solo las doce gemas más cercanas al jugador (usando el método \texttt{getResourcePositions()}), ya que podemos suponer que esas gemas son las más prometedoras.
 
 Con esto nos aseguramos obtener buenos resultados, que aunque no sean el óptimo, estarán muy cerca, porque será el óptimo de entre esas 12 gemas. En caso de que el mapa tenga menos de 12 gemas, obtendremos el óptimo, como por ejemplo en el mapa 6, que obtenemos 84 ticks.
 
@@ -351,6 +341,29 @@ El comportamiento reactivo se basa en evitar los enemigos que encontramos por el
 \subsection{Reactivo simple}
 
 De cara a implementar el agente reactivo simple he diseñado una matriz a modo de mapa de calor. Tendremos dos matrices: \texttt{mapa\_base} y \texttt{mapa\_calor}. El mapa base lo calcularemos únicamente una vez en el constructor del agente, y contendrá información del peligro de objetos fijos (muros), que nunca cambiarán durante la ejecución. El mapa de calor contendrá el mapa de calor durante esa iteración, y será el que calcularemos cada vez que se ejecuta el método \texttt{act}.
+
+La forma de calcular el mapa base es muy simple, inicializado a 0.0, recorremos todos los muros, y en todas las casillas alrededor del muro, con radio 2, le sumamos 1.0 si la distancia es de 1, o 0.5 si la distancia es de 2. En esta distancia tenemos en cuenta las diagonales, ya que los enemigos en realidad no se mueven en grid, si no por píxeles, por lo que un enemigo en un tick podría moverse en diagonal, así que la casilla diagonal tiene el mismo peligro que las perpendiculares. La propia posición del muro la pondremos a más infinito, para que el personaje nunca intente ir hacia ella. Por lo tanto, el mapa para un muro quedaría de la siguiente forma:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllll}
+0.5 & 0.5 & 0.5 & 0.5 & 0.5                     \\
+0.5 & 1.0 & 1.0 & 1.0 & 0.5                     \\
+0.5 & 1.0 & Inf    & 1.0 & 0.5                     \\
+0.5 & 1.0 & 1.0 & 1.0 & 0.5                     \\
+0.5 & 0.5 & 0.5 & 0.5 & \multicolumn{1}{c}{0.5}
+\end{tabular}
+\end{table}
+
+De forma que en el caso extremo en el que tengamos una posición totalmente rodeada de muros, su valor de riesgo será 16. Con este criterio (y de cara al comportamiento reactivo compuesto, como explicaré más adelante) en cada ejecución de \texttt{act} completaremos el mapa de peligro de esa ejecución teniendo en cuenta tanto los enemigos como las gemas.
+
+
+En el caso de los enemigos tendremos un radio bastante mayor, de 5, ya que si mantenemos el radio de 2 o incluso 3 nos arriesgamos a que tengamos que girar y el enemigo se acerque demasiado. Como he comentado, como el valor máximo que puede generar los muros es 16, el valor más pequeño sumado por un enemigo es 17, de esta forma podemos distinguir si estamos en riesgo por un enemigo o por un muro, además del sentido lógico, ya que los enemigos son un peligro mucho mayor a los muros. Realizaremos de la misma forma que antes el mapa de calor, pero sumando 17, 20, 25, 30 o 35 si el radio es 5, 4, 3, 2 o 1 respectivamente. De nuevo la casilla del enemigo le daremos un valor de infinito, para evitar movernos a esa posición.
+
+Para las gemas realizaremos la misma operación que con los muros, pero en lugar de sumar al mapa de peligro, restar, permitiendo moverse entre algún enemigo (si nos damos cuenta, solo cerca del primer nivel de peligro, nunca dentro de un rango superior a 3 casillas) para coger una gema.
+
+En todo nivel que no existan gemas, o el número de gemas sea menor que 10, supondremos que siempre hay riesgo. La forma de moverse con riesgo, como ya hemos comentado, es moverse a la casilla de al rededor con menor riesgo.
+
 
 \subsection{Reactivo compuesto}
 
