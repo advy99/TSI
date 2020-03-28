@@ -77,6 +77,14 @@ public class Agent extends AbstractPlayer{
                 camino_gemas = new Stack<>();
                 gemas_obtenidas = 0;
                 siempre_hay_riesgo = false;
+
+                // tenemos muchas gemas, el calculo es muy grande, así que nos
+                // quedamos con las 11 más prometedoras
+                if (gemas.size() > 11){
+                    List<Observation> gemas_2 = gemas.subList(0, 11);
+                    gemas = new ArrayList<>(gemas_2);
+                }
+
                 //System.out.println(elapsedCpuTimer.elapsedMillis());
                 //System.out.println(elapsedCpuTimer.remainingTimeMillis());
                 calcularCaminoGemas(stateObs, gemas_a_obtener);
@@ -427,7 +435,9 @@ public class Agent extends AbstractPlayer{
 
 
         boolean he_encontrado_mejor = false;
-        Pair<ArrayList<Integer>, Double> mejor ;
+        Pair<ArrayList<Integer>, Double> mejor = caminos.peek() ;
+        //Pair<ArrayList<Integer>, Double> mejor_con_mas_gemas = mejor ;
+
 
         do {
 
