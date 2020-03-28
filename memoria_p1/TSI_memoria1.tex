@@ -1,0 +1,250 @@
+\documentclass[10pt, spanish]{article}
+\usepackage[spanish]{babel}
+\selectlanguage{spanish}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage[utf8x]{inputenc}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{chngpage}
+
+\usepackage{subcaption}
+
+\usepackage{hyperref}
+\usepackage[
+    type={CC},
+    modifier={by-nc-sa},
+    version={4.0},
+]{doclicense}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+% para codigo
+\usepackage{listings}
+\usepackage{xcolor}
+
+
+
+%% configuración de listings
+
+\definecolor{listing-background}{HTML}{F7F7F7}
+\definecolor{listing-rule}{HTML}{B3B2B3}
+\definecolor{listing-numbers}{HTML}{B3B2B3}
+\definecolor{listing-text-color}{HTML}{000000}
+\definecolor{listing-keyword}{HTML}{435489}
+\definecolor{listing-identifier}{HTML}{435489}
+\definecolor{listing-string}{HTML}{00999A}
+\definecolor{listing-comment}{HTML}{8E8E8E}
+\definecolor{listing-javadoc-comment}{HTML}{006CA9}
+
+\lstdefinestyle{eisvogel_listing_style}{
+  language         = c++,
+%$if(listings-disable-line-numbers)$
+%  xleftmargin      = 0.6em,
+%  framexleftmargin = 0.4em,
+%$else$
+  numbers          = left,
+  xleftmargin      = 0em,
+ framexleftmargin = 0em,
+%$endif$
+  backgroundcolor  = \color{listing-background},
+  basicstyle       = \color{listing-text-color}\small\ttfamily{}\linespread{1.15}, % print whole listing small
+  breaklines       = true,
+  frame            = single,
+  framesep         = 0.19em,
+  rulecolor        = \color{listing-rule},
+  frameround       = ffff,
+  tabsize          = 4,
+  numberstyle      = \color{listing-numbers},
+  aboveskip        = 1.0em,
+  belowskip        = 0.1em,
+  abovecaptionskip = 0em,
+  belowcaptionskip = 1.0em,
+  keywordstyle     = \color{listing-keyword}\bfseries,
+  classoffset      = 0,
+  sensitive        = true,
+  identifierstyle  = \color{listing-identifier},
+  commentstyle     = \color{listing-comment},
+  morecomment      = [s][\color{listing-javadoc-comment}]{/**}{*/},
+  stringstyle      = \color{listing-string},
+  showstringspaces = false,
+  escapeinside     = {/*@}{@*/}, % Allow LaTeX inside these special comments
+  literate         =
+  {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+  {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+  {à}{{\`a}}1 {è}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+  {À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+  {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+  {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+  {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+  {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+  {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+  {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+  {€}{{\EUR}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+  {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
+  {…}{{\ldots}}1 {≥}{{>=}}1 {≤}{{<=}}1 {„}{{\glqq}}1 {“}{{\grqq}}1
+  {”}{{''}}1
+}
+\lstset{style=eisvogel_listing_style}
+
+
+\usepackage[default]{sourcesanspro}
+
+\setmarginsrb{2 cm}{1 cm}{2 cm}{2 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
+
+\title{Práctica 1:\\
+Técnicas de Búsqueda Heurística  \hspace{0.05cm} }                           
+\author{Antonio David Villegas Yeguas}                             
+\date{\today}                                           
+
+\renewcommand*\contentsname{hola}
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\theauthor}
+\lhead{\thetitle}
+\cfoot{\thepage}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+    \centering
+    \vspace*{0.3 cm}
+    \includegraphics[scale = 0.50]{ugr.png}\\[0.7 cm]
+    %\textsc{\LARGE Universidad de Granada}\\[2.0 cm]   
+    \textsc{\large 3º CSI 2019/20 - Grupo 1}\\[0.5 cm]            
+    \textsc{\large Grado en Ingeniería Informática}\\[0.5 cm]              
+    \rule{\linewidth}{0.2 mm} \\[0.2 cm]
+    { \huge \bfseries \thetitle}\\
+    \rule{\linewidth}{0.2 mm} \\[1 cm]
+    
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushleft} \large
+            \emph{Autor:}\\
+            \theauthor\\ 
+			 \emph{DNI:}\\
+            77021623-M
+            \end{flushleft}
+            \end{minipage}~
+            \begin{minipage}{0.4\textwidth}
+            \begin{flushright} \large
+            \emph{Asignatura: \\
+            Técnicas de los Sistemas Inteligentes}   \\     
+            \emph{Correo:}\\
+            advy99@correo.ugr.es           
+        \end{flushright}
+    \end{minipage}\\[0.5cm]
+  
+    {\large \thedate}\\[0.5cm]
+    %{\url{https://github.com/advy99/TSI/}}
+    {\doclicenseThis}
+ 	
+    \vfill
+    
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\tableofcontents
+%\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introducción}
+
+Para esta práctica se nos pide desarrollar un agente que juegue al juego \"Boulder Dash\", videojuego de 1984 para las computadores Atari. Simularemos este juego a través del entorno de desarrollo GVGAI, desarrollado en Java. Este entorno de desarrollo se caracteriza por ser una IA que juega a juegos genéricos, donde el objetivo es conseguir ciertos materiales, y cuando se obtengan dichos materiales salir por una puerta, todo esto evitando enemigos (si los hubiera). El juego en el que nos centraremos, ``Boulderdash'', tiene el mismo objetivo aunque para el desarrollo de la práctica se nos plantean algunas variaciones que veremos más adelante.
+
+El juego se desarrolla en un mapa cuadriculado para nuestro personaje (más adelante veremos que los enemigos tienen una forma distinta de moverse). Los movimientos que podrá realizar serán:
+
+\begin{itemize}
+	\item Moverse hacia arriba
+	\item Moverse hacia abajo
+	\item Moverse hacia la derecha
+	\item Moverse hacia la izquierda
+	\item No hacer nada
+\end{itemize}
+
+Además de esta acciones, si el personaje tiene que girarse, utilizará una acción para esto, es decir, si esta mirando hacia la derecha y quiere ir a la izquierda, necesitará dos ordenes de moverse a la izquierda, una para girarse y otra para realizar el movimiento.
+
+Nuestro agente tendrá un segundo inicial para realizar cálculos a modo de ``preparación'', y tras eso, deberá responder con una de estas acciones en menos de 40ms, si tarda entre 40ms y 50ms automáticamente responderá con la acción de no hacer nada, y en caso de tardar más de 50ms el agente quedará descalificado y perderá.
+
+El juego finaliza cuando se consigue el objetivo (en el caso del comportamiento deliberativo) o cuando el personaje sobrevive 2000 acciones (ticks dentro del juego, en el caso del comportamiento reactivo).
+
+\section{Comportamiento deliberativo}
+
+En el desarrollo de este apartado desarrollaremos el funcionamiento del agente deliberativo, es decir, el agente, con conocimiento del entorno, buscará la mejor forma de llegar al objetivo, en este nivel la puerta.
+
+De cara a conseguir esto he decidido implementar el algoritmo de búsqueda de caminos A*, este algoritmo combina el algoritmo de Dijkstra con el algoritmo greedy Best-First, añadiendo el componente de heurística con el que guiaremos la búsqueda intentando avanzar hacia la solución, en lugar de explorar de forma uniforme el espacio de búsqueda.
+
+Dicho esto, A* evaluará los nodos de la siguiente forma:
+
+$$ f(n) = g(n) + h(h) $$
+
+Donde $g(n)$ es el coste desde el punto de partida hasta el nodo $n$ y $h(n)$ es la heurística, es decir, la estimación que hacemos del coste desde el nodo $n$ hasta el nodo objetivo.
+
+He escogido este algoritmo ya que cumple las dos restricciones básicas para que este funcione:
+
+\begin{enumerate}
+	\item El grafo es localmente finito: Para cada nodo el número de hijos es finito. Esto se cumple ya que cada nodo tendrá 4 hijos (cada una de las acciones, a excepción de quedarse quieto, ya que ese hijo es el propio nodo y no es necesario explorarlo).
+	\item El coste de pasar de un nodo cualquiera a uno de sus sucesores es estrictamente positivo.
+\end{enumerate}
+
+No solo he escogido el algoritmo A* por estas características, que simplemente me permiten implementarlo en nuestro problema, si no porque como explicaré más adelante, para nuestro problema A* será un algoritmo completo, admisible, y con una heurística consistente (continua) lo que nos reducirá el coste computacional del algoritmo.
+
+\subsubsection{Completitud de A*}
+
+Para poder asegurar que A* es completo basta con demostrar que el grafo es finito, es decir, tiene un número finito de caminos acíclicos. En nuestro caso esto se cumple, ya que el número de casillas del mapa es finito, tendremos un número finito de caminos y podemos asegurar la completitud del algoritmo.
+
+\subsubsection{Admisibilidad de A*}
+
+En este caso la admisibilidad de A* depende de la heurística usada, ya que influirá en el orden de exploración de los nodos. Para que A* sea admisible, la heurística usada debe ser admisible, es decir, que se cumpla $h(n) \leq h^*(n)$. Básicamente que la estimación de nuestra heurística no sobreestime el coste real de llegar al nodo objetivo.
+
+En esta práctica, al ser un mundo cuadriculado usaré como heurística la distancia Manhattan, en la que una casilla tendrá un coste de uno. Esta heurística es admisible ya que cualquier movimiento, como mínimo, tendrá coste uno, por lo que nuestra estimación será igual o menor al coste real, en el mejor de los casos (linea recta) $h(n) = h^*(n)$, y en caso de que tenga que hacer algún giro $h(n) = h^*(n) - num\_giros$, por lo que la heurística siempre es admisible, y en caso de encontrar algún obstáculo necesitará gastar más ticks para llegar al objetivo, luego será admisible en todos los casos.
+
+\subsubsection{Heurística consistente (continua)}
+
+A* usando distancia Manhattan como heurística tiene la ventaja de que es consistente, es decir, para cada nodo $n$ y cada sucesor $n'$ generado a parir de $n$ tras cualquier acción $a$, el coste estimado de alcanzar el objetivo desde $n$ es menor o igual que el coste de alcanzar $n'$ más el coste estimado de alcanzar el objetivo desde $n'$, es decir:
+
+$$ h(n) \leq c(n, a, n') + h(n') $$
+
+Esta desigualdad triangular, cumplida si usamos la distancia Manhattan, nos asegura que cuando el algoritmo explora (abre) un nodo, este va a ser el mejor camino encontrado para llegar a ese nodo, por lo que una vez que un nodo entra en cerrados, sabemos que ese es el mejor camino para ese nodo, haciendo que si encontramos otro camino a dicho nodo simplemente los desechamos porque esta propiedad nos asegura que va a ser un peor camino.
+
+
+\subsubsection{Decisión de la elección del algoritmo}
+
+Una vez explicado el funcionamiento de A*, en este apartado procederé a explicar porque finalmente he escogido dicho algoritmo frente a otros algoritmos de búsqueda de caminos. He decidido explicarlo en este orden para que se entiendan las propiedades por las que A* es una mejor opción.
+
+
+
+\subsection{Deliberativo simple}
+
+\subsection{Deliberativo compuesto}
+
+\section{Comportamiento reactivo}
+
+\subsection{Reactivo simple}
+
+\subsection{Reactivo compuesto}
+
+\section{Comportamiento reactivo-deliverativo}
+
+
+\end{document}
