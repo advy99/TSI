@@ -162,7 +162,7 @@ public class Agent extends AbstractPlayer{
                             me_he_movido_riesgo = false;
 
                             // con menos de 10 gemas soy capaz de recalcular en menos de 40ms
-                            if (gemas_a_obtener - gemas_obtenidas < 10) {
+                            if (gemas_a_obtener - gemas_obtenidas < 8) {
                                 gemas = stateObs.getResourcesPositions(stateObs.getAvatarPosition())[0];
                                 calcularCaminoGemas(stateObs, gemas_a_obtener - gemas_obtenidas);
                             }
