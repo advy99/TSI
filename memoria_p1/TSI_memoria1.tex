@@ -184,9 +184,15 @@ El juego se desarrolla en un mapa cuadriculado para nuestro personaje (más adel
 
 Además de esta acciones, si el personaje tiene que girarse, utilizará una acción para esto, es decir, si esta mirando hacia la derecha y quiere ir a la izquierda, necesitará dos ordenes de moverse a la izquierda, una para girarse y otra para realizar el movimiento.
 
-Nuestro agente tendrá un segundo inicial para realizar cálculos a modo de ``preparación'', y tras eso, deberá responder con una de estas acciones en menos de 40ms, si tarda entre 40ms y 50ms automáticamente responderá con la acción de no hacer nada, y en caso de tardar más de 50ms el agente quedará descalificado y perderá.
+Nuestro agente tendrá un segundo inicial para realizar cálculos a modo de preparación', tras eso, deberá responder con una de estas acciones en menos de 40ms, si tarda entre 40ms y 50ms automáticamente responderá con la acción de no hacer nada, y en caso de tardar más de 50ms el agente quedará descalificado y perderá.
 
 El juego finaliza cuando se consigue el objetivo (en el caso del comportamiento deliberativo) o cuando el personaje sobrevive 2000 acciones (ticks dentro del juego, en el caso del comportamiento reactivo).
+
+En este documento explicaré las consideraciones tomadas al desarrollar la práctica, y la forma en la que ha ido evolucionando el código desde el nivel 1 hasta el nivel 5.
+
+\subsubsection{Consideraciones previas}
+
+Para el desarrollo del agente suponemos que siempre hay un portal de salida en los mapas que requieran comportamiento deliberativo, además el portal escogido para salir ha de ser único y accesible. Si no es único (existe más de un portal), es seleccionado el más cercano al jugador en el momento de inicio del juego.
 
 \section{Comportamiento deliberativo}
 
@@ -232,15 +238,119 @@ Esta desigualdad triangular, cumplida si usamos la distancia Manhattan, nos aseg
 
 Una vez explicado el funcionamiento de A*, en este apartado procederé a explicar porque finalmente he escogido dicho algoritmo frente a otros algoritmos de búsqueda de caminos. He decidido explicarlo en este orden para que se entiendan las propiedades por las que A* es una mejor opción.
 
+\textbf{IDA*}:
 
+A pesar de que el algoritmo IDA* puede parecer una buena idea, ya que seguimos manteniendo las propiedades antes comentadas por el A* con la ventaja de que no tenemos que almacenar información sobre los nodos frontera por explorar como en el algoritmo escogido, si no que solo almacena información sobre el camino actual, la forma de conseguir esta mejora en memoria hace que el algoritmo no sea viable en tiempo, ya que ha de ir explorando rama a rama todos los posibles caminos.
+
+Al tener tan solo 40ms para realizar los distintos cálculos, sumado a que en nuestro caso no existirá el problema de memoria al ser mapas pequeños y ahorrarnos la reexploración al usar una heurística consistente he decidido no usar este algoritmo ya que la única ventaja que nos ofrece no es realmente necesaria, sumado a la perdida de tiempo de computo y posiblemente la descalificación por no encontrar solución a tiempo.
+
+\textbf{Algoritmo de Dijkstra}:
+
+Este algoritmo proporciona el camino más corto entre un nodo y todos los demás, por lo que no es factible para grafos grandes, además, este algoritmo no usa búsqueda heurística, sumado a que el algoritmo A* es una variación de este algoritmo, que mejora la búsqueda al hacer uso de la heurística, escogería este algoritmo si no existiera heurística que me garantice que A* es admisible, pero como hemos comentado antes, existe y además mejora el algoritmo al ser consistente.
+
+\textbf{Algoritmo Greedy Best-First Search}:
+
+Este algoritmo usa únicamente la información heurística, por lo que busca el camino más directo al destino, pero sin tener en cuenta lo ya recorrido, por lo que un camino que parecía una buena opción al puede ser un mal camino al no tener en cuenta el coste hasta ese momento.
+
+De nuevo, el algoritmo escogido es una combinación de este algoritmo Greedy y el algoritmo del apartado anterior, de forma que tenga en cuenta la estimación del camino, pero siendo consciente de lo que ya lleva recorrido, y cambiando de camino si es necesario.
+
+
+\textbf{Otros algoritmos}:
+
+También he tenido en cuenta otros algoritmos, como el algoritmo de búsqueda por franjas o el algoritmo Theta* visto en teoría, sin embargo me he encontrado que son modificaciones de IDA* o A* para casos concretos en los que A* no se comporta bien, sin embargo en nuestro problema no es el caso, así que he decidido no implementarlos.
 
 \subsection{Deliberativo simple}
 
+De cara al desarrollo del agente deliberativo simple he hecho uso del algoritmo A* con heurística distancia Manhattan como antes he comentado. En este nivel nuestro agente simplemente intenta encontrar la puerta y salir.
+
+\subsubsection{Implementación del algoritmo A*}
+
+Para implementar el algoritmo A* he usado la clase \texttt{Node} disponible en el paquete \texttt{pathfinder} de GVGAI, aunque realizando algunas modificaciones:
+
+\begin{enumerate}
+	\item Añadido variable para la orientación, la cual tenemos en cuenta para comprobar si dos nodos son iguales.
+	\item Modificación del método \texttt{getMov} para que en lugar de no devolver nada (el uso era interno) devuelva la acción que ha conseguido llegar a ese estado.
+\end{enumerate}
+
+El primer punto es bastante importante, ya que si no sería mucho más difícil tener en cuenta la orientación al generar los nodos hijos, como veremos más adelante, lo que nos llevaría a un calculo erróneo de $g(n)$. Con respecto a la representación, he usado la siguiente:
+
+\begin{enumerate}
+	\item 0: Mirando hacia arriba
+	\item 1: Mirando hacia la derecha
+	\item 2: Mirando hacia abajo
+	\item 3: Mirando hacia la izquierda
+\end{enumerate}
+
+También he implementado una función para pasar de la representación de orientación dada por GVGAI a la mía, disponible en el código fuente que acompaña esta memoria.
+
+El segundo punto es importante ya que usaremos ese método para obtener la lista de movimientos una vez tengamos la solución.
+
+Dicho esto, la implementación del algoritmo sería la siguiente:
+
+\begin{lstlisting}
+Nodo algoritmoA-estrella( inicio, destino)
+	ColaPrioridad abiertos
+	ColaPrioridad cerrados
+	abiertos.add(inicio)
+	es_solucion = false
+	acciones = {UP, DOWN, LEFT, RIGTH}
+	Mientras !es_solucion
+		mejor_abiertos = abiertos.sacar_tope
+		cerrados.add(mejor_abiertos)
+		es_solucion = mejor_abiertos.equals(destino)
+		Si !es_solucion
+			Para cada accion en acciones:
+				Nodo hijo = mejor_abiertos
+				Muevo hijo.position acorde a accion, actualizo orientación
+				Si !esObstaculo(hijo)
+					hijo.parent = mejor_abiertos
+					hijo.coste = mejor_abiertos.coste + 1
+					hijo.costeEstimado = distancia_manhattan(hijo, fin)
+					Si hijo.orientacion != mejor_abiertos.orientacion
+						hijo.coste++
+					Si !abiertos.contiene(hijo) Y !cerrados.contiene(hijo)
+						abiertos.add(hijo)
+					Si No
+						Si abiertos.contiene(hijo)
+							buscar el nodo en abiertos, si el nuevo hijo es mejor, lo actualizamos
+	Devolver mejor_abiertos
+\end{lstlisting}
+
+Una vez tenemos el nodo \texttt{mejor\_abiertos} simplemente lo recorremos hasta que su padre sea nulo, metiendo las acciones recogidas con el método \texttt{getMov}, en caso de que sea la acción nula duplicamos la acción del tope de la pila, ya que la acción nula equivale a quedarse en la misma casilla, lo que indica que estamos girando.
+
+\subsubsection{Cambios necesarios en el método act y constructor del agente}
+
+Los cambios que he tenido que realizar en el constructor son crear una variable de tipo Pila que almacenará los pasos necesarios para llegar al destino. He escogido este tipo de estructura de datos ya que siempre accederemos al elemento superior, y aunque a primera vista de la impresión de que estamos accediendo en orden inverso a los elementos, nuestro A* nos devolverá el nodo solución, y para obtener el camino iremos desde dicho nodo hacia el inicial a través del atributo \texttt{parent} de los distintos nodos, por lo que estamos leyendo en orden inverso el camino. Al almacenarlo en una pila, lo almacenamos en orden inverso al leído, es decir, el orden correcto.
+
+Los cambios necesarios en el método \texttt{act} han sido añadir una condición, si el plan esta vacío, lanzamos el algoritmo A* y calculamos el plan a partir del nodo devuelto. En este caso suponemos que siempre existe el camino, es decir, que siempre hay portal (condición necesaria de la práctica). Si el plan no está vacío simplemente sacamos acciones del plan y las devolvemos.
+
+Como hemos comprobado en la explicación del algoritmo, tenemos un algoritmo completo, admisible, consistente y además con unos tiempos de ejecución muy buenos.
+
+Esta implementación nos hace obtener 27 ticks en el mapa 5.
+
+\newpage
+
 \subsection{Deliberativo compuesto}
+
+En este nivel, además de alcanzar la salida, el objetivo será conseguir 10 gemas distribuidas por el mapa. Para conseguir esto simplemente pruebo los distintos caminos posibles entre las gemas, es decir, suponiendo que tenemos 3 gemas A, B y C probaremos con los caminos: \{A, B, C\}, escogeremos el de menor distancia y generamos sus hijos, por ejemplo, suponiendo que B tiene menor distancia tendríamos: \{A, C, BA, BC\}, y volveríamos a coger el de menor distancia, hasta que lleguemos al objetivo, coger las 10 gemas, cuando lleguemos obtener todas y saquemos ese camino, por ejemplo el \{BAC\}, todavía tenemos que introducir en la lista de caminos el \{BACP\}, para comprobar que con la vuelta al portal es el mejor camino. Para realizar la implementación tenemos que tener algunas cosas más en cuenta.
+
+Para empezar, el coste de realizar este calculo es exponencial, en el ejemplo anterior, con 3 gemas, tenemos 3! + 3! posibles caminos (3! por las combinaciones A, B y C y otro 3! por dichas combinaciones sumarles el portal para llegar a la salida).
+
+Para seleccionar los nodos uso la estrategia del algoritmo de Dijkstra, el que tenga menor coste. El coste será la distancia entre las distintas gemas, el inicio, en nuestro ejemplo \{A, B, C\}, cada gema tendrá asociada el coste de ir desde la posición del jugador hasta A, hasta B o hasta C respectivamente. Para calcular estas distancias usaremos el algoritmo A*, ya que sabemos que con el obtenemos el optimo. Al principio del calculo relleno la parte superior de una matriz con tantas filas y columnas como número de gemas más dos (este último más dos para la distancia del punto inicial a las gemas y la distancia de las gemas al portal).
+
+He pensado en como mejorar este algoritmo, pero tras darle muchas vueltas no se me ocurre ninguna heurística que funcione a la hora de escoger que camino puede ser mejor que otro, ya que todas las que he probado (distancia entre una secuencia aleatoria de entre las gemas restantes, distancia de la última gema al portal multiplicado por el número de gemas restantes, distancia más grande de la matriz por número restante de gemas, entre otras) me daban peores resultados que un greedy simple, por lo que simplemente he dejado el algoritmo de esta forma, ya que con el segundo del constructor es capaz de calcularlo en todos los mapas que he probado, pero con una condición. Esta condición es que tenga menos de 12 gemas, si el mapa tiene 15, el límite superior con el que se corrige, tarda demasiado.
+
+Esto lo he solucionado cortando el vector de gemas a doce, con las doce más cercanas al jugador (usando el método \texttt{getResourcePositions()}), ya que podemos suponer que esas gemas son las más prometedoras.
+
+Con esto nos aseguramos obtener buenos resultados, que aunque no sean el óptimo, estarán muy cerca, porque será el óptimo de entre esas 12 gemas. En caso de que el mapa tenga menos de 12 gemas, obtendremos el óptimo, como por ejemplo en el mapa 6, que obtenemos 84 ticks.
 
 \section{Comportamiento reactivo}
 
+El comportamiento reactivo se basa en evitar los enemigos que encontramos por el mapa. Para el desarrollo de este comportamiento tendré un mapa de calor, que me indicará las zonas peligrosas del juego. En este caso el agente actuará de la forma más simple posible: moverse a la casilla de menor riesgo inmediata al personaje. He decidido seguir la navaja de Ockham, la forma más simple suele ser la más probable, en este caso, la forma que mejor funcione, he decidido esto tras varios intentos de buscar la mejor forma de moverse por el mapa, sin conseguir claramente un vencedor, a excepción del método, que con un mapa de calor detallado y preciso se comporta muy bien (con las pruebas realizadas siempre sobrevive el agente, a excepción de casos extremos como pasillos).
+
 \subsection{Reactivo simple}
+
+De cara a implementar el agente reactivo simple he diseñado una matriz a modo de mapa de calor. Tendremos dos matrices: \texttt{mapa\_base} y \texttt{mapa\_calor}. El mapa base lo calcularemos únicamente una vez en el constructor del agente, y contendrá información del peligro de objetos fijos (muros), que nunca cambiarán durante la ejecución. El mapa de calor contendrá el mapa de calor durante esa iteración, y será el que calcularemos cada vez que se ejecuta el método \texttt{act}.
 
 \subsection{Reactivo compuesto}
 
