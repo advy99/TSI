@@ -228,26 +228,18 @@ Esta desigualdad triangular, cumplida si usamos la distancia Manhattan, nos aseg
 
 Una vez explicado el funcionamiento de A*, en este apartado procederé a explicar porque finalmente he escogido dicho algoritmo frente a otros algoritmos de búsqueda de caminos. He decidido explicarlo en este orden para que se entiendan las propiedades por las que A* es una mejor opción.
 
-\textbf{IDA*}:
-
-A pesar de que el algoritmo IDA* puede parecer una buena idea, ya que seguimos manteniendo las propiedades antes comentadas por el A* con la ventaja de que no tenemos que almacenar información sobre los nodos frontera por explorar como en el algoritmo escogido, si no que solo almacena información sobre el camino actual, la forma de conseguir esta mejora en memoria hace que el algoritmo no sea viable en tiempo, ya que ha de ir explorando rama a rama todos los posibles caminos.
+\textbf{IDA*}: A pesar de que el algoritmo IDA* puede parecer una buena idea, ya que seguimos manteniendo las propiedades antes comentadas por el A* con la ventaja de que no tenemos que almacenar información sobre los nodos frontera por explorar como en el algoritmo escogido, si no que solo almacena información sobre el camino actual, la forma de conseguir esta mejora en memoria hace que el algoritmo no sea viable en tiempo, ya que ha de ir explorando rama a rama todos los posibles caminos.
 
 Al tener tan solo 40ms para realizar los distintos cálculos, sumado a que en nuestro caso no existirá el problema de memoria al ser mapas pequeños y ahorrarnos la reexploración al usar una heurística consistente he decidido no usar este algoritmo ya que la única ventaja que nos ofrece no es realmente necesaria, sumado a la perdida de tiempo de computo y posiblemente la descalificación por no encontrar solución a tiempo.
 
-\textbf{Algoritmo de Dijkstra}:
+\textbf{Algoritmo de Dijkstra}: Este algoritmo proporciona el camino más corto entre un nodo y todos los demás, por lo que no es factible para grafos grandes, además, este algoritmo no usa búsqueda heurística, sumado a que el algoritmo A* es una variación de este algoritmo, que mejora la búsqueda al hacer uso de la heurística, escogería este algoritmo si no existiera heurística que me garantice que A* es admisible, pero como hemos comentado antes, existe y además mejora el algoritmo al ser consistente.
 
-Este algoritmo proporciona el camino más corto entre un nodo y todos los demás, por lo que no es factible para grafos grandes, además, este algoritmo no usa búsqueda heurística, sumado a que el algoritmo A* es una variación de este algoritmo, que mejora la búsqueda al hacer uso de la heurística, escogería este algoritmo si no existiera heurística que me garantice que A* es admisible, pero como hemos comentado antes, existe y además mejora el algoritmo al ser consistente.
-
-\textbf{Algoritmo Greedy Best-First Search}:
-
-Este algoritmo usa únicamente la información heurística, por lo que busca el camino más directo al destino, pero sin tener en cuenta lo ya recorrido, por lo que un camino que parecía una buena opción al puede ser un mal camino al no tener en cuenta el coste hasta ese momento.
+\textbf{Algoritmo Greedy Best-First Search}: Este algoritmo usa únicamente la información heurística, por lo que busca el camino más directo al destino, pero sin tener en cuenta lo ya recorrido, por lo que un camino que parecía una buena opción al puede ser un mal camino al no tener en cuenta el coste hasta ese momento.
 
 De nuevo, el algoritmo escogido es una combinación de este algoritmo Greedy y el algoritmo del apartado anterior, de forma que tenga en cuenta la estimación del camino, pero siendo consciente de lo que ya lleva recorrido, y cambiando de camino si es necesario.
 
 
-\textbf{Otros algoritmos}:
-
-También he tenido en cuenta otros algoritmos, como el algoritmo de búsqueda por franjas o el algoritmo Theta* visto en teoría, sin embargo me he encontrado que son modificaciones de IDA* o A* para casos concretos en los que A* no se comporta bien, sin embargo en nuestro problema no es el caso, así que he decidido no implementarlos.
+\textbf{Otros algoritmos}: También he tenido en cuenta otros algoritmos, como el algoritmo de búsqueda por franjas o el algoritmo Theta* visto en teoría, sin embargo me he encontrado que son modificaciones de IDA* o A* para casos concretos en los que A* no se comporta bien, sin embargo en nuestro problema no es el caso, así que he decidido no implementarlos.
 
 \subsection{Deliberativo simple}
 
@@ -262,47 +254,37 @@ Para implementar el algoritmo A* he usado la clase \texttt{Node} disponible en e
 	\item Modificación del método \texttt{getMov} para que en lugar de no devolver nada (el uso era interno) devuelva la acción que ha conseguido llegar a ese estado.
 \end{enumerate}
 
-El primer punto es bastante importante, ya que si no sería mucho más difícil tener en cuenta la orientación al generar los nodos hijos, como veremos más adelante, lo que nos llevaría a un calculo erróneo de $g(n)$. Con respecto a la representación, he usado la siguiente:
-
-\begin{enumerate}
-	\item 0: Mirando hacia arriba
-	\item 1: Mirando hacia la derecha
-	\item 2: Mirando hacia abajo
-	\item 3: Mirando hacia la izquierda
-\end{enumerate}
+El primer punto es bastante importante, ya que si no sería mucho más difícil tener en cuenta la orientación al generar los nodos hijos, como veremos más adelante, lo que nos llevaría a un calculo erróneo de $g(n)$. Con respecto a la representación de la orientación, he usado 0, 1, 2 y 3, que representan arriba, derecha, abajo e izquierda respectivamente, ya que la representación usada por GVGAI me parecía demasiado compleja para el problema que tratamos.
 
 También he implementado una función para pasar de la representación de orientación dada por GVGAI a la mía, disponible en el código fuente que acompaña esta memoria.
 
 El segundo punto es importante ya que usaremos ese método para obtener la lista de movimientos una vez tengamos la solución.
 
-Dicho esto, la implementación del algoritmo sería la siguiente:
+Dicho esto, la implementación del algoritmo sería la siguiente (en pseudocódigo):
 
 \begin{lstlisting}
 Nodo algoritmoA-estrella( inicio, destino)
-	ColaPrioridad abiertos
-	ColaPrioridad cerrados
+	ColaPrioridad abiertos, cerrados
 	abiertos.add(inicio)
 	es_solucion = false
-	acciones = {UP, DOWN, LEFT, RIGTH}
 	Mientras !es_solucion
 		mejor_abiertos = abiertos.sacar_tope
 		cerrados.add(mejor_abiertos)
 		es_solucion = mejor_abiertos.equals(destino)
 		Si !es_solucion
-			Para cada accion en acciones:
+			Para cada accion:
 				Nodo hijo = mejor_abiertos
 				Muevo hijo.position acorde a accion, actualizo orientación
 				Si !esObstaculo(hijo)
 					hijo.parent = mejor_abiertos
 					hijo.coste = mejor_abiertos.coste + 1
 					hijo.costeEstimado = distancia_manhattan(hijo, fin)
-					Si hijo.orientacion != mejor_abiertos.orientacion
-						hijo.coste++
+					Si hijo.orientacion != hijo.parent.orientacion: hijo.coste++
 					Si !abiertos.contiene(hijo) Y !cerrados.contiene(hijo)
 						abiertos.add(hijo)
 					Si No
 						Si abiertos.contiene(hijo)
-							buscar el nodo en abiertos, si el nuevo hijo es mejor, lo actualizamos
+							actualizar con el de menor coste
 	Devolver mejor_abiertos
 \end{lstlisting}
 
@@ -316,9 +298,11 @@ Los cambios necesarios en el método \texttt{act} han sido añadir una condició
 
 Como hemos comprobado en la explicación del algoritmo, tenemos un algoritmo completo, admisible, consistente y además con unos tiempos de ejecución muy buenos.
 
-Esta implementación nos hace obtener 27 ticks en el mapa 5.
 
-\newpage
+
+Esta implementación nos hace obtener 27 ticks en el mapa 5
+
+\textbf{Importante:} Además de modificar el fichero \texttt{boulderdash.txt} para establecer el límite de gemas a -1, también tenemos que modificar la primera linea del constructor del agente, estableciendo \texttt{gemas\_a\_obtener = 0}.
 
 \subsection{Deliberativo compuesto}
 
@@ -330,7 +314,7 @@ Para seleccionar los nodos uso la estrategia del algoritmo de Dijkstra, el que t
 
 He pensado en como mejorar este algoritmo, pero tras darle muchas vueltas no se me ocurre ninguna heurística que funcione a la hora de escoger que camino puede ser mejor que otro, ya que todas las que he probado (distancia entre una secuencia aleatoria de entre las gemas restantes, distancia de la última gema al portal multiplicado por el número de gemas restantes, distancia más grande de la matriz por número restante de gemas, entre otras) me daban peores resultados que un greedy simple, por lo que simplemente he dejado el algoritmo de esta forma, ya que con el segundo del constructor es capaz de calcularlo en todos los mapas que he probado, pero con una condición. Esta condición es que tenga menos de 12 gemas, si el mapa tiene 15, el límite superior con el que se corrige, tarda demasiado.
 
-Esto lo he solucionado usando solo las doce gemas más cercanas al jugador (usando el método \texttt{getResourcePositions()}), ya que podemos suponer que esas gemas son las más prometedoras.
+Esto lo he solucionado usando solo las doce gemas más cercanas al jugador (usando \texttt{getResourcePositions()}), ya que podemos suponer que esas gemas son las más prometedoras.
 
 Con esto nos aseguramos obtener buenos resultados, que aunque no sean el óptimo, estarán muy cerca, porque será el óptimo de entre esas 12 gemas. En caso de que el mapa tenga menos de 12 gemas, obtendremos el óptimo, como por ejemplo en el mapa 6, que obtenemos 84 ticks.
 
@@ -344,8 +328,11 @@ De cara a implementar el agente reactivo simple he diseñado una matriz a modo d
 
 La forma de calcular el mapa base es muy simple, inicializado a 0.0, recorremos todos los muros, y en todas las casillas alrededor del muro, con radio 2, le sumamos 1.0 si la distancia es de 1, o 0.5 si la distancia es de 2. En esta distancia tenemos en cuenta las diagonales, ya que los enemigos en realidad no se mueven en grid, si no por píxeles, por lo que un enemigo en un tick podría moverse en diagonal, así que la casilla diagonal tiene el mismo peligro que las perpendiculares. La propia posición del muro la pondremos a más infinito, para que el personaje nunca intente ir hacia ella. Por lo tanto, el mapa para un muro quedaría de la siguiente forma:
 
+\vspace{-0.4cm}
+
 \begin{table}[H]
 \centering
+
 \begin{tabular}{lllll}
 0.5 & 0.5 & 0.5 & 0.5 & 0.5                     \\
 0.5 & 1.0 & 1.0 & 1.0 & 0.5                     \\
@@ -355,19 +342,49 @@ La forma de calcular el mapa base es muy simple, inicializado a 0.0, recorremos 
 \end{tabular}
 \end{table}
 
+\vspace{-0.5cm}
+
 De forma que en el caso extremo en el que tengamos una posición totalmente rodeada de muros, su valor de riesgo será 16. Con este criterio (y de cara al comportamiento reactivo compuesto, como explicaré más adelante) en cada ejecución de \texttt{act} completaremos el mapa de peligro de esa ejecución teniendo en cuenta tanto los enemigos como las gemas.
 
 
 En el caso de los enemigos tendremos un radio bastante mayor, de 5, ya que si mantenemos el radio de 2 o incluso 3 nos arriesgamos a que tengamos que girar y el enemigo se acerque demasiado. Como he comentado, como el valor máximo que puede generar los muros es 16, el valor más pequeño sumado por un enemigo es 17, de esta forma podemos distinguir si estamos en riesgo por un enemigo o por un muro, además del sentido lógico, ya que los enemigos son un peligro mucho mayor a los muros. Realizaremos de la misma forma que antes el mapa de calor, pero sumando 17, 20, 25, 30 o 35 si el radio es 5, 4, 3, 2 o 1 respectivamente. De nuevo la casilla del enemigo le daremos un valor de infinito, para evitar movernos a esa posición.
 
-Para las gemas realizaremos la misma operación que con los muros, pero en lugar de sumar al mapa de peligro, restar, permitiendo moverse entre algún enemigo (si nos damos cuenta, solo cerca del primer nivel de peligro, nunca dentro de un rango superior a 3 casillas) para coger una gema.
+Para las gemas realizaremos la misma operación que con los muros, pero en lugar de sumar al mapa de peligro, restaremos peligro, permitiendo moverse entre algún enemigo (si nos fijamos en el código, solo cerca del primer o segundo nivel de peligro, nunca dentro de un rango superior a 3 casillas) para coger una gema.
 
 En todo nivel que no existan gemas, o el número de gemas sea menor que 10, supondremos que siempre hay riesgo. La forma de moverse con riesgo, como ya hemos comentado, es moverse a la casilla de al rededor con menor riesgo.
+
+En un mapa que siempre hay riesgo (de momento tanto en el reactivo simple como el compuesto siempre lo hay) he añadido que en las zonas centrales tenga menos riesgo, intentando evitar los bordes del mapa. En caso de que en el centro existan muros, estos se compensarán con el peligro que ya les dimos anteriormente.
 
 
 \subsection{Reactivo compuesto}
 
+Para el reactivo compuesto la forma de trabajar es exactamente la misma, la única diferencia es al asignar el mapa de peligro de los enemigos, he modificado la forma de asignación del peligro para que en zonas donde afecte el peligro de dos enemigos, solo tenga en cuenta el de uno (el que tenga mayor peligro), de forma que si dos enemigos le encierran contra una pared, tenga la posibilidad de pasar entre los dos enemigos antes de acercarse a una esquina en la que la probabilidad de morir es más alta.
+
+Tanto en el reactivo simple como en el reactivo compuesto esto me ha funcionado bastante bien, ganando en casi todas las partidas que he ejecutado (en mapas con muchos muros y pasillos si es más probable que muera por la complejidad del mapa), tanto el simple como en el compuesto, probando con distintos mapas (mapa en blanco, con muros por el mapa, mapas con pasillos, etc)
+
 \section{Comportamiento reactivo-deliverativo}
 
+El desarrollo de este modo ha sido simple, en el método \texttt{act} he introducido variables booleanas que controlan el flujo del agente como si fuera una máquina de estados, en el caso de no tener gemas, se comportará de forma reactiva, en el caso de tener gemas, comprobará si existe riesgo, y en caso de no existir riesgo se comportará de forma deliberativa, como en el nivel 3 y 4 siempre hay riesgo, no tenemos problemas. En el nivel 2, al tener las gemas, aunque los muros añaden riesgo, está por debajo del umbral considerado para comenzar a actuar con riesgo, por lo que siempre se comportará de forma deliberativa. El único caso especial es el nivel 1, en el que tenemos que modificar el juego para establecer el límite de gemas a -1, y en nuestro agente cambiar la variable \texttt{gemas\_a\_obtener} a 0.
+
+De esta forma para este nivel continuará su ejecución de forma deliberativa buscando las gemas, a excepción de si entra en el rango de un enemigo, que se comenzará a mover de forma reactiva. Cuando sale del rango y vuelve a actuar de forma deliberativa, vuelve a recalcular el camino para la gema que estaba buscando, y en el caso de que nos queden menos de 6 gemas, recalcularemos el camino (menos de 6 ya que el método de calcular el camino es costoso, así que he decidido no arriesgarme a quedarme sin tiempo).
+
+\section{Resultados}
+
+Resultados con los mapas dados (he probado con otros mapas, pero no dispongo de espacio para mostrarlos ni mostrar su solución):
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+                         & \textbf{Mapa 5} & \textbf{Mapa 6} & \textbf{Mapa 7} & \textbf{Mapa 8} & \textbf{Mapa 9} \\ \hline
+\textbf{Ticks/sobrevive} & 27              & 84              & Sobrevive       & Sobrevive       & 128,6 (media)            \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Aviso:} Los ticks en el mapa 9 son de media tras 10 ejecuciones, en ocasiones obtenemos unos 84, mientras que en otras hemos llegado a 250. Las ejecuciones de los mapas 7 y 8 también, de unas 10 ejecuciones cada uno solo ha muerto una vez en el compuesto.
+
+\section{Material consultado para realizar la práctica}
+
+Apuntes y diapositivas de teoría, prácticas y el libro ``Inteligencia Artificial: Un enfoque moderno'' de Stuart Russell y Peter Norvig.
 
 \end{document}
