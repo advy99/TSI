@@ -260,35 +260,7 @@ También he implementado una función para pasar de la representación de orient
 
 El segundo punto es importante ya que usaremos ese método para obtener la lista de movimientos una vez tengamos la solución.
 
-Dicho esto, la implementación del algoritmo sería la siguiente (en pseudocódigo):
-
-\begin{lstlisting}
-Nodo algoritmoA-estrella( inicio, destino)
-	ColaPrioridad abiertos, cerrados
-	abiertos.add(inicio)
-	es_solucion = false
-	Mientras !es_solucion
-		mejor_abiertos = abiertos.sacar_tope
-		cerrados.add(mejor_abiertos)
-		es_solucion = mejor_abiertos.equals(destino)
-		Si !es_solucion
-			Para cada accion:
-				Nodo hijo = mejor_abiertos
-				Muevo hijo.position acorde a accion, actualizo orientación
-				Si !esObstaculo(hijo)
-					hijo.parent = mejor_abiertos
-					hijo.coste = mejor_abiertos.coste + 1
-					hijo.costeEstimado = distancia_manhattan(hijo, fin)
-					Si hijo.orientacion != hijo.parent.orientacion: hijo.coste++
-					Si !abiertos.contiene(hijo) Y !cerrados.contiene(hijo)
-						abiertos.add(hijo)
-					Si No
-						Si abiertos.contiene(hijo)
-							actualizar con el de menor coste
-	Devolver mejor_abiertos
-\end{lstlisting}
-
-Una vez tenemos el nodo \texttt{mejor\_abiertos} simplemente lo recorremos hasta que su padre sea nulo, metiendo las acciones recogidas con el método \texttt{getMov}, en caso de que sea la acción nula duplicamos la acción del tope de la pila, ya que la acción nula equivale a quedarse en la misma casilla, lo que indica que estamos girando.
+Dicho esto, la implementación del algoritmo podemos consultarla en el fichero \texttt{Agent.java}. La implementación usa colas con prioridad para gestionar abiertos y cerrados, y simplemente va generando los hijos del mejor de abiertos, si un hijo no se ha generado nunca, lo inserta en abiertos, si un hijo ya se ha generado y está en abiertos nos quedamos con el hijo de menor coste, y si generamos un hijo que ya está en cerrados directamente lo desechamos, ya que al usar una heurística consistente sabemos que el que está en cerrados ya es el mejor camino. Este algoritmo devolverá el nodo solución. Una vez tenemos dicho nodo solución, simplemente lo recorremos hasta que su padre sea nulo, metiendo las acciones recogidas con el método \texttt{getMov}, en caso de que sea la acción nula duplicamos la acción del tope de la pila, ya que la acción nula equivale a quedarse en la misma casilla, lo que indica que estamos girando.
 
 \subsubsection{Cambios necesarios en el método act y constructor del agente}
 
