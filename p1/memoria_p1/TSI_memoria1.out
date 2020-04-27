@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Introducci\363n}{}% 1
+\BOOKMARK [2][-]{subsubsection.1.0.1}{Consideraciones previas}{section.1}% 2
+\BOOKMARK [1][-]{section.2}{Comportamiento deliberativo}{}% 3
+\BOOKMARK [2][-]{subsubsection.2.0.1}{Completitud de A*}{section.2}% 4
+\BOOKMARK [3][-]{subsubsection.2.0.2}{Admisibilidad de A*}{subsubsection.2.0.1}% 5
+\BOOKMARK [3][-]{subsubsection.2.0.3}{Heur\355stica consistente \(continua\)}{subsubsection.2.0.1}% 6
+\BOOKMARK [3][-]{subsubsection.2.0.4}{Decisi\363n de la elecci\363n del algoritmo}{subsubsection.2.0.1}% 7
+\BOOKMARK [2][-]{subsection.2.1}{Deliberativo simple}{section.2}% 8
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Implementaci\363n del algoritmo A*}{subsection.2.1}% 9
+\BOOKMARK [3][-]{subsubsection.2.1.2}{Cambios necesarios en el m\351todo act y constructor del agente}{subsection.2.1}% 10
+\BOOKMARK [2][-]{subsection.2.2}{Deliberativo compuesto}{section.2}% 11
+\BOOKMARK [1][-]{section.3}{Comportamiento reactivo}{}% 12
+\BOOKMARK [2][-]{subsection.3.1}{Reactivo simple}{section.3}% 13
+\BOOKMARK [2][-]{subsection.3.2}{Reactivo compuesto}{section.3}% 14
+\BOOKMARK [1][-]{section.4}{Comportamiento reactivo-deliverativo}{}% 15
+\BOOKMARK [1][-]{section.5}{Resultados}{}% 16
+\BOOKMARK [1][-]{section.6}{Material consultado para realizar la pr\341ctica}{}% 17
