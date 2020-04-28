@@ -104,4 +104,11 @@ output ["\([asignaciones[i, 11]])  " |  i in num_aulas];
 output ["\n\n12:00 : \n"];
 output ["\([asignaciones[i, 12]])  " |  i in num_aulas];
 
+output ["\n\n Asignaciones: Nada = 0, IA1 = 1, TSI1 = 2, FBD1 = 3, IA2 = 4, TSI2 = 5, FBD2 = 6, IA3 = 7, TSI3 = 8, FBD3 = 9, IA4 = 10, TSI4 = 11, FBD4 = 12,  " ];
+output ["\nClases del profesor 1 : IA1, IA2, TSI1, TSI2"];
+output ["\nClases del profesor 2 : FBD1, FBD2"];
+output ["\nClases del profesor 3 : TSI3, TSI4, FBD3, FBD4"];
+output ["\nClases del profesor 4 : IA3, IA4"];
+
+
 solve satisfy;
