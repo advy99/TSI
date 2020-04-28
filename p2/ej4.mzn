@@ -31,12 +31,13 @@ int : IA4 = 10;
 int : TSI4 = 11;
 int : FBD4 = 12;
 
-%array[1..13] of string : asignaturas = ["IA1", "TSI1", "FBD1", "IA2", "TSI1", "FBD2", "IA3", "TSI3", "FBD3", "IA4", "TSI4", "FBD4", "NADA"];
+array[1..13] of string : asignaturas = ["NADA", "IA1", "TSI1", "FBD1", "IA2", "TSI2", "FBD2", "IA3", "TSI3", "FBD3", "IA4", "TSI4", "FBD4"];
 
 array[1..4] of int : profesor1 = [1, 2, 4, 5];
 array[1..2] of int : profesor2 = [3, 6];
 array[1..4] of int : profesor3 = [8, 9, 11, 12];
 array[1..2] of int : profesor4 = [7, 10];
+
 
 array[num_aulas, horas_disponibles] of var 0..12 : asignaciones;
 
@@ -91,6 +92,16 @@ constraint forall(i in horas_disponibles)(forall(aula in num_aulas)(if asignacio
 constraint forall(x in 1..12)(1 == count([asignaciones[i,j+8] | i, j in num_aulas], x));
 
 
-output ["Aula \(i): \([asignaciones[i, j] | j in horas_disponibles]) \n\n" | i in num_aulas];
+output ["9:00: \n"];
+output ["\([asignaciones[i, 9]])  " |  i in num_aulas];
+
+output ["\n\n10:00 : \n"];
+output ["\([asignaciones[i, 10]])  " |  i in num_aulas];
+
+output ["\n\n11:00 : \n"];
+output ["\([asignaciones[i, 11]])  " |  i in num_aulas];
+
+output ["\n\n12:00 : \n"];
+output ["\([asignaciones[i, 12]])  " |  i in num_aulas];
 
 solve satisfy;
