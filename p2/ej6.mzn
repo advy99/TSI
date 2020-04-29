@@ -2,6 +2,7 @@ include "globals.mzn";
 
 set of int : vecinos = 1..5;
 
+% enums con los datos que vamos a usar
 enum nacionalidades = {vasco, catalan, gallego, navarro, andaluz};
 enum animales = {cebra, zorro, caballo, perro, caracoles};
 enum bebidas = {agua, te, leche, zumo, cafe};
@@ -9,6 +10,7 @@ enum profesiones = {pintor, violinista, medico, diplomatico, escultor};
 enum colores = {rojo, amarillo, azul, verde, blanco};
 
 
+% arrays, uno por cada caracteristica del vecino
 array[vecinos] of var nacionalidades : asignacion_nacionalidad;
 array[vecinos] of var colores : asignacion_colores;
 array[vecinos] of var animales : asignacion_animales;
@@ -17,29 +19,33 @@ array[vecinos] of var profesiones : asignacion_profesiones;
 
 
 % el vasco tiene la casa roja
-%constraint forall(i in vecinos)(if asignacion_nacionalidad[i] == vasco then asignacion_colores[i] == rojo endif);
+% buscamos la casa del vasco
 var int : casa_vasco;
 constraint forall(i in vecinos)(if asignacion_nacionalidad[i] == vasco then casa_vasco == i endif);
 
+% buscamos la casa roja
 var int : casa_roja;
 constraint forall(i in vecinos)(if asignacion_colores[i] == rojo then casa_roja == i endif);
 
+% hacemos que sean la misma, para que asigne los mismos indices en su respectivo vector al vasco y a la casa roja
 constraint casa_vasco == casa_roja;
 
 
 % el catalan tiene un perro
-%constraint forall(i in vecinos)(if asignacion_nacionalidad[i] == catalan then asignacion_animales[i] == perro endif);
+% igual que antes, buscamos la casa del catalan
 var int : casa_catalan;
 constraint forall(i in vecinos)(if asignacion_nacionalidad[i] == catalan then casa_catalan == i endif);
 
+% buscamos la casa del perro
 var int : casa_perro;
 constraint forall(i in vecinos)(if asignacion_animales[i] == perro then casa_perro == i endif);
 
+% hacemos que sean la misma, por el mismo motivo antes explicado
 constraint casa_catalan == casa_perro;
 
 
 % el gallego es pintor
-%constraint forall(i in vecinos)(if asignacion_nacionalidad[i] == gallego then asignacion_profesiones[i] == pintor endif);
+% lo resolvemos exactamente igual que los anteriores
 var int : casa_gallego;
 constraint forall(i in vecinos)(if asignacion_nacionalidad[i] == gallego then casa_gallego == i endif);
 
@@ -50,7 +56,7 @@ constraint casa_gallego == casa_pintor;
 
 
 % el navarro bebe te
-%constraint forall(i in vecinos)(if asignacion_nacionalidad[i] == navarro then asignacion_bebidas[i] == te endif);
+% lo resolvemos exactamente igual que los anteriores
 var int : casa_navarro;
 constraint forall(i in vecinos)(if asignacion_nacionalidad[i] == navarro then casa_navarro == i endif);
 
@@ -60,12 +66,12 @@ constraint forall(i in vecinos)(if asignacion_bebidas[i] == te then casa_te == i
 constraint casa_navarro == casa_te;
 
 
-% andaluz en la primera casa de la izquierda
+% andaluz en la primera casa de la izquierda, luego asignamos que en la posicion 1 de nacionalidades está el andaluz
 constraint asignacion_nacionalidad[1] == andaluz;
 
 
 % el de la casa verde bebe cafe
-%constraint forall(i in vecinos)(if asignacion_colores[i] == verde then asignacion_bebidas[i] == cafe endif);
+% lo resolvemos exactamente igual que los anteriores
 var int : casa_verde;
 constraint forall(i in vecinos)(if asignacion_colores[i] == verde then casa_verde == i endif);
 
@@ -76,16 +82,15 @@ constraint casa_verde == casa_cafe;
 
 
 % la casa verde esta al lado de la blanca y a su derecha (si i == 5, no hay casa a la derecha)
-%constraint exists(x in vecinos)(if asignacion_colores[i] == blanco then asignacion_colores[i+1] == verde endif);
-%constraint exists(x in vecinos)(asignacion_colores[x] == blanco /\ (if x != 5 then asignacion_colores[x+1] == verde endif));
-
+% lo resolvemos exactamente igual, no es necesario buscar la casa verde ya que la hemos usado en 
+% apartados anteriores
 var int : casa_blanca;
 constraint forall(i in vecinos)(if asignacion_colores[i] == blanco then casa_blanca == i endif);
 
 constraint casa_verde == casa_blanca+1;
 
 % el escultor cria caracoles
-%constraint forall(i in vecinos)(if asignacion_profesiones[i] == escultor then asignacion_animales[i] == caracoles endif);
+% lo resolvemos exactamente igual que los anteriores
 var int : casa_escultor;
 constraint forall(i in vecinos)(if asignacion_profesiones[i] == escultor then casa_escultor == i endif);
 
@@ -96,7 +101,7 @@ constraint casa_escultor == casa_caracoles;
 
 
 % el diplomatico vive en la casa amarilla
-%constraint forall(i in vecinos)(if asignacion_profesiones[i] == diplomatico then asignacion_colores[i] == amarillo endif);
+% lo resolvemos exactamente igual que los anteriores
 var int : casa_diplomatico;
 constraint forall(i in vecinos)(if asignacion_profesiones[i] == diplomatico then casa_diplomatico == i endif);
 
@@ -105,7 +110,7 @@ constraint forall(i in vecinos)(if asignacion_colores[i] == amarillo then casa_a
 
 constraint casa_diplomatico == casa_amarilla;
 
-% en la casa central se bebe leche
+% en la casa central se bebe leche, como tenemos 1..5, la central es la 3
 constraint asignacion_bebidas[3] == leche;
 
 
@@ -115,7 +120,7 @@ constraint asignacion_colores[2] == azul;
 
 
 % el violinista bebe zumo
-%constraint forall(i in vecinos)(if asignacion_profesiones[i] == violinista then asignacion_bebidas[i] == zumo endif);
+% lo resolvemos exactamente igual que los anteriores
 var int : casa_violinista;
 constraint forall(i in vecinos)(if asignacion_profesiones[i] == violinista then casa_violinista == i endif);
 
@@ -127,29 +132,30 @@ constraint casa_zumo == casa_violinista;
 
 
 % al lado de la casa del zorro esta la casa del medico
-%constraint forall(i in vecinos)(if asignacion_animales[i] == zorro then asignacion_profesiones[i+1] == medico \/ asignacion_profesiones[i-1] == medico endif);
+% lo resolvemos exactamente igual que los anteriores, solo que la asignacion será diferente
 var int : casa_zorro;
 constraint forall(i in vecinos)(if asignacion_animales[i] == zorro then casa_zorro == i endif);
 
 var int : casa_medico;
 constraint forall(i in vecinos)(if asignacion_profesiones[i] == medico then casa_medico == i endif);
 
-
-constraint casa_zorro != casa_medico /\ abs(casa_zorro - casa_medico) == 1;
+% en este caso, sabemos que la casa esta al lado, es decir, la distancia absoluta de su resta tiene que valer 1
+constraint abs(casa_zorro - casa_medico) == 1;
 
 
 
 % al lado de la casa del caballo esta la casa del diplomatico
+% lo resolvemos exactamente igual que los anteriores, solo que la asignacion será como en el caso anterior
 var int : casa_caballo;
 constraint forall(i in vecinos)(if asignacion_animales[i] == caballo then casa_caballo == i endif);
 
-%var int : casa_diplomatico;
-%constraint forall(i in vecinos)(if asignacion_profesiones[i] == diplomatico then casa_diplomatico == i endif);
+% no tenemos que buscar al diplomatico, lo hemos usado en apartados anteriores
+
+% en este caso, sabemos que la casa esta al lado, es decir, la distancia absoluta de su resta tiene que valer 1
+constraint abs(casa_caballo - casa_diplomatico) == 1;
 
 
-constraint casa_caballo != casa_diplomatico  /\ abs(casa_caballo - casa_diplomatico) == 1;
-
-
+% aplicamos a todos los arrays alldifferent, para que no repita valores
 constraint alldifferent(asignacion_nacionalidad);
 constraint alldifferent(asignacion_colores);
 constraint alldifferent(asignacion_animales);
@@ -157,13 +163,14 @@ constraint alldifferent(asignacion_profesiones);
 constraint alldifferent(asignacion_bebidas);
 
 
-% sacamos los resultados
+% buscamos el indice de la casa donde beben agua y el índice de la casa donde está la cebra
 var int : num_casa_agua;
 var int : num_casa_cebra;
 
 constraint forall(i in vecinos)(if asignacion_animales[i] == cebra then num_casa_cebra == i endif);
 constraint forall(i in vecinos)(if asignacion_bebidas[i] == agua then num_casa_agua == i endif);
 
+% sacamos por pantalla los resultados
 output ["Nacionalidades: \([asignacion_nacionalidad[i] | i in 1..5]) \n" ];
 output ["Bebidas       : \([asignacion_bebidas[i] | i in 1..5]) \n" ];
 output ["Profesion     : \([asignacion_profesiones[i] | i in 1..5]) \n" ];
