@@ -15,9 +15,10 @@ constraint horarios[4, 1] = 10; constraint horarios[4, 2] = 13;
 constraint horarios[5, 1] = 11; constraint horarios[5, 2] = 13;
 constraint horarios[6, 1] = 9 ; constraint horarios[6, 2] = 15;
 
-
+% los profesores tienen que tener una hora distinta cada uno
 constraint alldifferent(profesores);
 
+% cada profesor tiene que estar dentro de su horario
 constraint forall(i in 1..6)(profesores[i] >= horarios[i, 1] /\ profesores[i] < horarios[i, 2]);
 
 
