@@ -8,6 +8,7 @@ set of int : num_profs = 1..6;
 array[num_profs] of var 9..14 : profesores;
 array[num_profs, 1..2] of var 9..15 : horarios;
 
+% las horas en las que puede estar cada profesor
 constraint horarios[1, 1] = 11; constraint horarios[1, 2] = 15;
 constraint horarios[2, 1] = 11; constraint horarios[2, 2] = 13;
 constraint horarios[3, 1] = 10; constraint horarios[3, 2] = 14;
