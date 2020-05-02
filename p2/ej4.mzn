@@ -82,7 +82,7 @@ constraint forall(i in horas_disponibles)(forall(aula in num_aulas)(if asignacio
 constraint forall(i in horas_disponibles)(forall(aula in num_aulas)(if asignaciones[aula, i] == IA3 \/ asignaciones[aula, i] == IA4 then forall(k in aula+1..4)(asignaciones[k, i] != IA3 /\ asignaciones[k, i] != IA4) endif));
 
 
-% cada asignatura aparece solo una vez
+% cada asignatura aparece solo una vez, usamos j+8 ya que aunque es una matriz cuadrada, num_aulas comienza en 1 y horas_disponibles en 9
 constraint forall(x in 1..12)(1 == count([asignaciones[i,j+8] | i, j in num_aulas], x));
 
 

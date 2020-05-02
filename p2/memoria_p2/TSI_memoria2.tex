@@ -167,7 +167,7 @@ Satisfacción de restricciones  \hspace{0.05cm} }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Introducción}
+\section*{Introducción}
 
 En esta práctica se nos propone resolver distintos problemas de satisfacción de restricciones. En cada problema, dado su enunciado, hay que decidir cuales son las variables que intervienen en el problema, el dominio que tienen dichas variables, y que restricciones tienen esas variables, como bien sabemos tras estudiar el tema 2 de la teoría de la asignatura.
 
@@ -276,13 +276,29 @@ Cada profesor tiene un horario disponible. Esto lo solucionamos haciendo uso de 
 \end{figure}
 
 \section{Ejercicio 4}
-
+Encontrar una asignación de horarios que satisfaga las siguientes condiciones (condiciones en las restricciones).
 
 \subsection{Variables}
 
+Usaré una matriz de asignaciones, con tantas filas como aulas, y tantas columnas como horas permitidas.
+
+Usaré variables auxiliares para referirme a las asignaturas de forma más cómoda.
+
 \subsection{Dominio de las variables}
 
+La matriz de asignaciones ira de 0 hasta 12, 0 es un hueco libre, y de 1 a 12 un número por asignatura. Las asignaturas 1, 2 y 3 representarán IA, TSI y FBD respectivamente del grupo 1, las asignaturas 4, 5 y 6 las del grupo 2, etc.
+
 \subsection{Restricciones}
+
+En una misma franja horaria, lo que se imparte en las distintas clases ha de ser distinto. Esto lo conseguiremos en MiniZinc haciendo un bucle en el que para todas las horas i, la clase de las distintas aulas j sea distinta.
+
+También tenemos que asegurarnos que si en una hora en un aula se da una clase del grupo 1 (por ejemplo), en las demás aulas no puede haber clases del mismo grupo. Esto lo haremos para todos los grupos.
+
+Esto último también lo tenemos que hacer para las asignaturas que imparten los profesores, por ejemplo, si a una hora se imparte IA2, no se puede impartir TSI1 ya que las imparte el mismo profesor.
+
+También contamos con las restricciones de que el profesor 2 no puede dar clase a las 10:00 y el profesor 4 no puede dar clase a las 9:00. Simplemente hacemos que para todas las aulas, en esa franja horaria no esté ninguna asignatura impartida por dichos profesores.
+
+Por último, comprobamos que cada asignatura aparece una sola vez.
 
 \subsection{Resultado}
 
@@ -295,33 +311,73 @@ Cada profesor tiene un horario disponible. Esto lo solucionamos haciendo uso de 
 
 \end{figure}
 
+
 \section{Ejercicio 5}
+
+Encontrar una asignación de horarios que satisfaga las siguientes condiciones.
 
 \subsection{Variables}
 
+Hora de inicio y hora de fin. La hora de fin serán 5 horas después de la hora de inicio, para tener esas 6 horas que comenta el ejercicio. Eliminar el valor por defecto para que pregunte la hora de inicio al usuario.
+
+Un array por cada día de la semana.
+
+Un array con las horas necesarias de cada asignatura.
+
 \subsection{Dominio de las variables}
 
+La hora de inicio y hora de fin son enteros.
+
+Los distintos arrays representando los días de la semana almacenarán valores de 0 a 9, donde 0 es que no se asigna asignatura y del 1 al 9 las distintas asignaturas.
+
+El array de horas necesarias toma valores de 1 a 4, que son el número de horas dadas. Podría usarse como int al estar fijo al inicio del programa.
+
 \subsection{Restricciones}
+
+Cada asignatura aparece en todos los días exactamente el número de horas necesarias almacenado en el array de horas necesarias.
+
+Las asignaturas 1, 3, 4, 5 y 8 se impartirán en bloques de dos horas, y las demás en bloques de una hora, además solo se puede dar un bloque por día de la semana. Esto lo conseguiremos haciendo que las apariciones de una asignatura un día solo puede ser igual a  0 (no se imparte ese día) o 1 o 2 (dependiendo del tamaño del bloque).
+
+Los bloques se imparten en horas consecutivas, luego nos aseguraremos que si en una posición i aparece una asignatura de dos horas, en una de las posiciones contiguas también aparece la asignatura.
+
+Se pide que la cuarta hora se deje libre para el recreo, luego todos los días, la hora correspondiente a la hora de comienzo más tres (el comienzo de la cuarta franja horaria) tendrá el valor 0.
+
+También tenemos que tener en cuenta que si un bloque aparece un día, no puede aparecer más bloques impartidos por el mismo profesor, a excepción del profesor 4. Esto lo conseguiremos asegurando que si un día aparece una asignatura impartida por un profesor, esta solo aparece el número de horas correspondiente a un bloque y no aparecen otras asignaturas impartidas por el profesor.
 
 \subsection{Resultado}
 
 
 \begin{figure}[H]
   \centering
-      \includegraphics[scale = 0.30]{sol5.png}
+      \includegraphics[scale = 0.40]{sol5.png}
  		 \caption{Solución obtenida para el ejercicio 5.}
   		\label{fig:ej5}
 
 \end{figure}
 
+Comentar que mientras en otros ejercicios el tiempo de ejecución es inapreciable, en este ejercicio no ocurre debido a la complejidad de las restricciones, y vemos como tenemos que esperar unos pocos segundos par obtener la solución.
+
+
+\newpage
 
 \section{Ejercicio 6}
+Cinco personas de cinco regiones diferentes viven en las primeras cinco casas contiguas de una calle. Practican cinco profesiones distintas, y cada uno tiene un animal y una bebida favoritos, todos ello diferentes. Las casas están pintadas con diferentes colores. Ademas sabemos lo siguiente (restricciones en el PDF, más adelante explicaré algunas).
+
+Resolver el problema de forma que podamos responder: ¿dónde está la cebra y quién bebe agua?
 
 \subsection{Variables}
 
+Cinco vectores con 5 posiciones, cada no representará la asignación que haremos de nacionalidades, color de casa, máscotas, bebidas y profesiones.
+
+Variables auxiliares que usaremos para cumplir las restricciones.
+
 \subsection{Dominio de las variables}
 
+Todos los vectores tendrán un enumerado asociado, en el que están sus posibles valores, por ejemplo usaremos un enumerado de colores, donde estarán los valores rojo, amarillo, azul, verde y blanco.
+
 \subsection{Restricciones}
+
+Como restricciones tenemos la lista dada en el enunciado. Diferenciamos dos restricciones, en las que interviene un único array, por ejemplo que el andaluz vive en la casa de la izquierda, que se resolverá haciendo que la primera posición del array de nacionalidades tenga el valor andaluz, o el segundo tipo, donde intervienen dos arrays, por ejemplo el vasco vive en la casa roja, lo que haremos es hacer que el indice de la casa roja sea el mismo que el indice del array donde está el valor vasco en el array de nacionalidades.
 
 \subsection{Resultado}
 
@@ -334,13 +390,40 @@ Cada profesor tiene un horario disponible. Esto lo solucionamos haciendo uso de 
 
 \end{figure}
 
+\newpage
+
 \section{Ejercicio 7}
+
+En la tabla adjunta aparece la información necesaria para llevar a cabo la construcción de una casa. En la primera columna aparecen los indentificadores de las tareas necesarias para
+construirla. En la segunda columna aparece la descripción de cada una de estas. En la tercera columna se muestra la duración (en días) de cada una de las tareas. Y la cuarta columna muestra la relación de precedencia entre tareas: por ejemplo, si el contenido de la celda correspondiente a la tarea “F” es “C,D" se debe interpretar como que “las tareas C y D deben finalizarse antes que comience la tarea “F”. Se pide encontrar una asignación de tiempos de inicio a estas tareas de forma que se pueda construir la casa en el menor tiempo posible, asumiendo que cada tarea la realiza un único trabajador y que se disponen de tantos trabajadores como se necesiten.
 
 \subsection{Variables}
 
+Array de nueve elementos con al duración de cada tarea.
+
+Coste de la solución.
+
+Matriz de predecesoras. La usaremos para almacenar las tareas que tienen que ser realizadas antes que otras.
+
+Array de con las predecesoras ordenadas.
+
+Array con la asignación final que mostraremos como solución.
+
 \subsection{Dominio de las variables}
 
+La matriz de predecesoras y el array de predecesoras van desde 0 hasta el número de tareas menos 1, 0 representa que no tiene predecesora. Es una matriz con dos columnas para representar las tareas que tienen varias predecesoras.
+
+El coste de la solución tiene dominio en los enteros.
+
+Los distintos arrays tienen dominio entre 1 y 9, el número de tareas, menos el de predecesoras ordenadas, que también incluye el 0 al tener tareas sin predecesoras.
+
 \subsection{Restricciones}
+
+Las restricciones es que se de el orden en el que se tienen que hacer las tareas, esto lo haremos con el array de predecesoras ordenadas, lo recorreremos y si un elemento coincide con el de predecesoras, sabemos que esa tarea se tiene que realizar antes, por lo que en el array solución tendrá el mismo valor. Esto también hace que por ejemplo, si varias tareas se realizan en paralelo, podamos pasar del indice 2 al 5, porque la segunda, tercera y cuarta tarea se ejecutan en paralelo.
+
+Otra restricción es que el coste sea mínimo, para esto usaremos la opción de MiniZinc \texttt{solve minimize coste}. Para obtener el coste de una tarea he declarado una función recursiva en MiniZinc, de forma que si la tarea dada tiene como predecesoras el 0, devuelve el coste de esa tarea, y si no el máximo del coste de las dos predecesoras más el coste de la propia tarea.
+
+El coste por tanto será la llamada a esta función con la última tarea del array de predecesoras ordenadas más uno (el array de predecesoras va de 0 a 8 y las tareas de 0 a 9).
 
 \subsection{Resultado}
 
@@ -376,17 +459,39 @@ Cada profesor tiene un horario disponible. Esto lo solucionamos haciendo uso de 
 %\subsection{Resultado}
 
 
-
 \section{Ejercicio 10}
+
+Un turista desea llenar su mochila con varios objetos para hacer un viaje. El peso máximo que aguanta la mochila son 275kg, y cada objeto tiene distinto grado de preferencia para el turista (la preferencia se mide en una escala de 0 a 200, donde los números más altos representan los objetos más deseados por el turista). En la tabla siguiente se muestran los objetos, su peso y su preferencia. Encontrar el conjunto de objetos cuya suma de preferencias sea máxima sin exceder el peso máximo que aguanta la mochila.
+
+
 
 \subsection{Variables}
 
+Array de longitud 12 (ya que son 12 objetos) de los distintos pesos de los objetos.
+
+Array de longitud 12 (ya que son 12 objetos) de las preferencias de los distintos objetos.
+
+Array de longitud 12 (ya que son 12 objetos) de objetos seleccionados.
+
+Peso máximo.
+
+Peso en la mochila.
+
+Preferencia de los objetos introducidos en la mochila.
+
 \subsection{Dominio de las variables}
+
+El array de pesos, el de preferencias, y las variables usadas son de tipo int, al poder contener enteros que en principio no están limitados.
+
+El array de objetos seleccionados es un array de elementos tipo bool, en el que una posición i = false representa que el objeto i no se ha seleccionado y true representa que si se ha seleccionado.
 
 \subsection{Restricciones}
 
-\subsection{Resultado}
+Las restricciones son que la suma de los objetos seleccionados (marcados como true en el array de objetos seleccionados) sea menor que el tamaño máximo (275 en el ejercicio).
 
+Otra restricción es que la preferencia de los objetos seleccionados sea máxima. Esto lo haremos sumando la preferencia de los objetos marcados a true, y usando la opción \texttt{solve maximize preferencia}, en el que MiniZinc lo resolverá intentando que el valor de esa variable sea el más alto posible.
+
+\subsection{Resultado}
 
 \begin{figure}[H]
   \centering
@@ -396,5 +501,6 @@ Cada profesor tiene un horario disponible. Esto lo solucionamos haciendo uso de 
 
 \end{figure}
 
+En este caso, al usar maximize, MiniZinc nos muestra por que situaciones ha ido pasando antes de encontrar la solución.
 
 \end{document}
