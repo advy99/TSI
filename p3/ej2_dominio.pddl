@@ -57,7 +57,7 @@
 				(entidadEnLocalizacion ?x ?loc)
 				(asignarNodoRecursoLocalizacion ?rec ?loc)
 				(unidadLibre ?x)
-				; si no es Gas, o si es Gas tenemos un edificio de tipo Extractor en la localizacion 
+				; si no es Gas, o si es Gas tenemos un edificio de tipo Extractor en la localizacion
 				(imply (asignarNodoRecursoLocalizacion Gas ?loc) (and (entidadEnLocalizacion ?edi ?loc) (esEdificio ?edi Extractor) ) )
 			)
 	  :effect
@@ -74,8 +74,13 @@
 				(unidadLibre ?unidad)
 				(entidadEnLocalizacion ?unidad ?x)
 
-				(necesitaRecurso ?edificio ?recurso)
-				(estaExtrayendoRecurso ?recurso)
+				(exists (?t - tipoEdificio)
+					(and
+						(esEdificio ?edificio ?t)
+						(necesitaRecurso ?t ?recurso)
+						(estaExtrayendoRecurso ?recurso)
+					)
+				)
 			)
 	  :effect
 	  		(and
