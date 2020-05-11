@@ -71,8 +71,14 @@
 				(unidadLibre ?unidad)
 				(entidadEnLocalizacion ?unidad ?x)
 
-				(necesitaRecurso ?edificio ?recurso)
-				(estaExtrayendoRecurso ?recurso)
+				(exists (?t - tipoEdificio)
+					(and
+						(esEdificio ?edificio ?t)
+						(necesitaRecurso ?t ?recurso)
+						(estaExtrayendoRecurso ?recurso)
+					)
+				)
+
 			)
 	  :effect
 	  		(and

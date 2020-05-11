@@ -102,8 +102,8 @@
 		(unidadLibre vce2)
 		(unidadLibre vce3)
 
-		(necesitaRecurso barracones1 Mineral)
-		(necesitaRecurso centroMando1 Gas)
+		(necesitaRecurso Barracones Mineral)
+		(necesitaRecurso CentroDeMando Gas)
 
 		(esEdificio barracones1 Barracones)
 		(esEdificio centroMando1 CentroDeMando)
