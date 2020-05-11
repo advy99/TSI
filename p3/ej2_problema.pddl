@@ -6,7 +6,7 @@
 	(:objects
 		; mapa 5 x 5
 		l1_1 l1_2 l1_3 l1_4 l1_5 l2_1 l2_2 l2_3 l2_4 l2_5 l3_1 l3_2 l3_3 l3_4 l3_5 l4_1 l4_2 l4_3 l4_4 l4_5 l5_1 l5_2 l5_3 l5_4 l5_5 - localizacion
-		centroMando1 barracones1 - edificio
+		centroMando1 barracones1 extractor1 - edificio
 		vce1 vce2 vce3 - unidad
 	)
 
@@ -104,12 +104,15 @@
 
 		(necesitaRecurso barracones1 Mineral)
 		(necesitaRecurso centroMando1 Gas)
+		(necesitaRecurso extractor1 Mineral)
 
-		(edificioEs barracones1 Barracones)
-		(edificioEs centroMando1 CentroDeMando)
-		(unidadEs vce1 VCE)
-		(unidadEs vce2 VCE)
-		(unidadEs vce3 VCE)
+		(esEdificio barracones1 Barracones)
+		(esEdificio centroMando1 CentroDeMando)
+		(esEdificio extractor1 Extractor)
+
+		(esUnidad vce1 VCE)
+		(esUnidad vce2 VCE)
+		(esUnidad vce3 VCE)
 
 		(asignarNodoRecursoLocalizacion Mineral l2_2)
 		(asignarNodoRecursoLocalizacion Mineral l5_1)
@@ -122,7 +125,8 @@
 
 	(:goal
 		(and
-			(entidadEnLocalizacion barracones1 l3_2)
+			(estaExtrayendoRecurso Gas)
+			;(entidadEnLocalizacion barracones1 l3_2)
 		)
 	)
 )
