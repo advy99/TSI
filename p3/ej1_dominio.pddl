@@ -17,6 +17,7 @@
 		Barracones - tipoEdificio
 		Mineral - tipoRecurso
 		Gas - tipoRecurso
+
 	)
 
 	(:predicates
@@ -28,8 +29,8 @@
 
 		(unidadLibre ?uni - unidad)
 
-		(edificioEs ?edif - edificio ?tipoEdif - tipoEdificio)
-		(unidadEs ?unid - unidad ?tUnid - tipoUnidad)
+		(esEdificio ?edif - edificio ?tipoEdif - tipoEdificio)
+		(esUnidad ?unid - unidad ?tUnid - tipoUnidad)
 	)
 
 	(:action navegar
