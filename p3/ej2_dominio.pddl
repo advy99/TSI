@@ -33,8 +33,6 @@
 
 		(esEdificio ?edif - edificio ?tipoEdif - tipoEdificio)
 		(esUnidad ?unid - unidad ?tUnid - tipoUnidad)
-
-		(extractorEn ?loc - localizacion)
 	)
 
 	(:action navegar
@@ -53,13 +51,14 @@
 	)
 
 	(:action asignar
-	  :parameters (?x - unidad ?rec - recurso ?loc - localizacion)
+	  :parameters (?x - unidad ?rec - recurso ?loc - localizacion ?edi - edificio)
 	  :precondition
 	  		(and
 				(entidadEnLocalizacion ?x ?loc)
 				(asignarNodoRecursoLocalizacion ?rec ?loc)
 				(unidadLibre ?x)
-				(imply (asignarNodoRecursoLocalizacion Gas ?loc) (entidadEnLocalizacion extractor1 ?loc))
+				; si no es Gas, o si es Gas tenemos un edificio de tipo Extractor en la localizacion 
+				(imply (asignarNodoRecursoLocalizacion Gas ?loc) (and (entidadEnLocalizacion ?edi ?loc) (esEdificio ?edi Extractor) ) )
 			)
 	  :effect
 	  		(and
