@@ -15,7 +15,7 @@
 		VCE - tipoUnidad
 		CentroDeMando - tipoEdificio
 		Barracones - tipoEdificio
-		Minerales - tipoRecurso
+		Mineral - tipoRecurso
 		Gas - tipoRecurso
 	)
 
@@ -23,8 +23,8 @@
 		(entidadEnLocalizacion ?obj - entidad ?x - localizacion)
 		(caminoEntre ?x1 - localizacion ?x2 - localizacion)
 		(asignarNodoRecursoLocalizacion ?r - recurso ?x - localizacion)
-		(estaExtrayendoRecurso ?vce - unidad ?x - localizacion)
-		(necesitaRecurso ?x - edificio ?recurso - recurso)
+		(estaExtrayendoRecurso ?rec - recurso)
+		(necesitaRecurso ?x - edificio ?rec - recurso)
 
 		(unidadLibre ?uni - unidad)
 
@@ -48,16 +48,18 @@
 	)
 
 	(:action asignar
-	  :parameters (?x - unidad ?nodo - recurso ?loc - localizacion)
+	  :parameters (?x - unidad ?rec - recurso ?loc - localizacion)
 	  :precondition
 	  		(and
 				(entidadEnLocalizacion ?x ?loc)
+				(asignarNodoRecursoLocalizacion ?rec ?loc)
 				(unidadLibre ?x)
-				(asignarNodoRecursoLocalizacion ?nodo ?loc)
 			)
 	  :effect
 	  		(and
 				(not (unidadLibre ?x))
+				(estaExtrayendoRecurso ?rec)
+
 			)
 	)
 
@@ -67,7 +69,9 @@
 	  		(and
 				(unidadLibre ?unidad)
 				(entidadEnLocalizacion ?unidad ?x)
+
 				(necesitaRecurso ?edificio ?recurso)
+				(estaExtrayendoRecurso ?recurso)
 			)
 	  :effect
 	  		(and

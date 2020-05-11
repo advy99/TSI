@@ -102,18 +102,27 @@
 		(unidadLibre vce2)
 		(unidadLibre vce3)
 
+		(necesitaRecurso barracones1 Mineral)
+		(necesitaRecurso centroMando1 Gas)
+
 		(edificioEs barracones1 Barracones)
 		(edificioEs centroMando1 CentroDeMando)
 		(unidadEs vce1 VCE)
 		(unidadEs vce2 VCE)
 		(unidadEs vce3 VCE)
 
+		(asignarNodoRecursoLocalizacion Mineral l2_2)
+		(asignarNodoRecursoLocalizacion Mineral l5_1)
+		(asignarNodoRecursoLocalizacion Mineral l3_4)
+
+		(asignarNodoRecursoLocalizacion Gas l5_3)
+		(asignarNodoRecursoLocalizacion Gas l4_4)
 
 	)
 
 	(:goal
 		(and
-			(entidadEnLocalizacion vce1 l3_2)
+			(entidadEnLocalizacion barracones1 l3_2)
 		)
 	)
 )
