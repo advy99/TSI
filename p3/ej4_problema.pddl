@@ -8,6 +8,7 @@
 		l1_1 l1_2 l1_3 l1_4 l1_5 l2_1 l2_2 l2_3 l2_4 l2_5 l3_1 l3_2 l3_3 l3_4 l3_5 l4_1 l4_2 l4_3 l4_4 l4_5 l5_1 l5_2 l5_3 l5_4 l5_5 - localizacion
 		centroMando1 centroMando2 barracones1 extractor1 - edificio
 		vce1 vce2 vce3 - unidad
+		marine1 marine2 segador1 - unidad
 	)
 
 	(:init
@@ -107,7 +108,7 @@
 		(necesitaRecurso Extractor Mineral)
 
 		(necesitaRecurso VCE Mineral)
-		(necesitaRecurso Marines Mineral)
+		(necesitaRecurso Marine Mineral)
 		(necesitaRecurso Segador Mineral)
 		(necesitaRecurso Segador Gas)
 
@@ -119,6 +120,10 @@
 		(esUnidad vce1 VCE)
 		(esUnidad vce2 VCE)
 		(esUnidad vce3 VCE)
+
+		(esUnidad marine1 Marine)
+		(esUnidad marine2 Marine)
+		(esUnidad segador1 Segador)
 
 		(asignarNodoRecursoLocalizacion Mineral l2_2)
 		(asignarNodoRecursoLocalizacion Mineral l5_1)
@@ -133,7 +138,9 @@
 		(and
 			;(estaExtrayendoRecurso Gas)
 			;(entidadEnLocalizacion barracones1 l3_2)
-			(entidadEnLocalizacion centroMando2 l5_5)
+			(entidadEnLocalizacion marine1 l5_5)
+			(entidadEnLocalizacion marine2 l4_2)
+			(entidadEnLocalizacion segador1 l2_2)
 		)
 	)
 )

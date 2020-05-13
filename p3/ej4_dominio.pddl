@@ -61,6 +61,7 @@
 				(entidadEnLocalizacion ?x ?loc)
 				(asignarNodoRecursoLocalizacion ?rec ?loc)
 				(unidadLibre ?x)
+				(esUnidad ?x VCE)
 				(imply (asignarNodoRecursoLocalizacion Gas ?loc) (and (entidadEnLocalizacion ?edi ?loc) (esEdificio ?edi Extractor) ) )
 			)
 
@@ -97,9 +98,22 @@
 	)
 
 	(:action reclutar
-		:parameters ()
-		:precondition ()
-		:effect ()
+		:parameters (?unid - unidad ?edificio - edificio ?loc - localizacion)
+		:precondition
+			(and
+				(imply (or (esUnidad ?unid VCE) (esUnidad ?unid Marine) ) (estaExtrayendoRecurso Mineral) )
+				(imply (esUnidad ?unid Segador) (and (estaExtrayendoRecurso Mineral) (estaExtrayendoRecurso Gas)) )
+				(entidadEnLocalizacion ?edificio ?loc)
+
+				(imply (esEdificio ?edificio CentroDeMando) (esUnidad ?unid VCE))
+				(imply (esEdificio ?edificio Barracones) (or  (esUnidad ?unid Marine) (esUnidad ?unid Segador) ) )
+			)
+
+		:effect
+			( and
+				(entidadEnLocalizacion ?unid ?loc)
+				(unidadLibre ?unid)
+			)
 
 	)
 
