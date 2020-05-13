@@ -125,8 +125,8 @@
 
 	(:goal
 		(and
-			(estaExtrayendoRecurso Gas)
-			;(entidadEnLocalizacion barracones1 l3_2)
+			;(estaExtrayendoRecurso Gas)
+			(entidadEnLocalizacion barracones1 l3_2)
 		)
 	)
 )
