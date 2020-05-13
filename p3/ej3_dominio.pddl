@@ -41,6 +41,7 @@
 	  		(and
 				(entidadEnLocalizacion ?unidad ?x)
 				(caminoEntre ?x ?y)
+				(unidadLibre ?unidad)
 			)
 
 	  :effect
