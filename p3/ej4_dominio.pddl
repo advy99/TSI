@@ -101,6 +101,7 @@
 		:parameters (?unid - unidad ?edificio - edificio ?loc - localizacion)
 		:precondition
 			(and
+				(not (exists (?l - localizacion) (and  (entidadEnLocalizacion ?unid ?l)) ) )
 				(imply (or (esUnidad ?unid VCE) (esUnidad ?unid Marine) ) (estaExtrayendoRecurso Mineral) )
 				(imply (esUnidad ?unid Segador) (and (estaExtrayendoRecurso Mineral) (estaExtrayendoRecurso Gas)) )
 				(entidadEnLocalizacion ?edificio ?loc)

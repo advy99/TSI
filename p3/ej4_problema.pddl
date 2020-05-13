@@ -139,7 +139,7 @@
 			;(estaExtrayendoRecurso Gas)
 			;(entidadEnLocalizacion barracones1 l3_2)
 			(entidadEnLocalizacion marine1 l5_5)
-			(entidadEnLocalizacion marine2 l4_2)
+			(entidadEnLocalizacion marine2 l2_2)
 			(entidadEnLocalizacion segador1 l2_2)
 		)
 	)
