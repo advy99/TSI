@@ -79,6 +79,7 @@
 	  		(and
 				(unidadLibre ?unidad)
 				(entidadEnLocalizacion ?unidad ?x)
+				(esUnidad ?unidad VCE)
 
 				(forall (?r - tipoRecurso)
 					(exists (?t - tipoEdificio)
