@@ -117,7 +117,7 @@
 					(and
 						(estaExtrayendoRecurso Mineral)
 						(estaExtrayendoRecurso Gas)
-						(exists (?t - investigacion) (and (heInvestigado ImpulsorSegador) (esInvestigacion ?t ImpulsorSegador)) )
+						(exists (?t - investigacion) (and (heInvestigado ?t) (esInvestigacion ?t ImpulsorSegador)) )
 
 					)
 				)
