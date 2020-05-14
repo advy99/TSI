@@ -25,7 +25,7 @@
 		(caminoEntre ?x1 - localizacion ?x2 - localizacion)
 		(asignarNodoRecursoLocalizacion ?r - recurso ?x - localizacion)
 		(estaExtrayendoRecurso ?rec - recurso)
-		(necesitaRecurso ?x - edificio ?rec - recurso)
+		(necesitaRecurso ?x - tipoEdificio ?rec - tipoRecurso)
 
 		(unidadLibre ?uni - unidad)
 

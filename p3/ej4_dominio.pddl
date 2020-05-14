@@ -31,7 +31,7 @@
 		(asignarNodoRecursoLocalizacion ?r - recurso ?x - localizacion)
 		(estaExtrayendoRecurso ?rec - recurso)
 		; cambiamos edificio por entidad
-		(necesitaRecurso ?x - entidad ?rec - recurso)
+		(necesitaRecurso ?x - entidad ?rec - tipoRecurso)
 
 		(unidadLibre ?uni - unidad)
 
