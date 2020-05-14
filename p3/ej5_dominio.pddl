@@ -87,6 +87,7 @@
 				(unidadLibre ?unidad)
 				(entidadEnLocalizacion ?unidad ?x)
 				(esUnidad ?unidad VCE)
+				(not (exists (?edif - edificio) (entidadEnLocalizacion ?edif ?x) ) )
 
 				(forall (?r - tipoRecurso)
 					(exists (?t - tipoEdificio)

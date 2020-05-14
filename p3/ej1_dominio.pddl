@@ -71,6 +71,7 @@
 	  		(and
 				(unidadLibre ?unidad)
 				(entidadEnLocalizacion ?unidad ?x)
+				(not (exists (?edif - edificio) (entidadEnLocalizacion ?edif ?x) ) )
 
 				(exists (?t - tipoEdificio)
 					(and
