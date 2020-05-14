@@ -6,9 +6,10 @@
 	(:objects
 		; mapa 5 x 5
 		l1_1 l1_2 l1_3 l1_4 l1_5 l2_1 l2_2 l2_3 l2_4 l2_5 l3_1 l3_2 l3_3 l3_4 l3_5 l4_1 l4_2 l4_3 l4_4 l4_5 l5_1 l5_2 l5_3 l5_4 l5_5 - localizacion
-		centroMando1 centroMando2 barracones1 extractor1 - edificio
+		centroMando1 centroMando2 barracones1 extractor1 bahia1 - edificio
 		vce1 vce2 vce3 - unidad
 		marine1 marine2 segador1 - unidad
+		impulsorSegador1 - investigacion
 	)
 
 	(:init
@@ -106,11 +107,16 @@
 		(necesitaRecurso CentroDeMando Gas)
 		(necesitaRecurso CentroDeMando Mineral)
 		(necesitaRecurso Extractor Mineral)
+		(necesitaRecurso BahiaIngenieria Mineral)
+		(necesitaRecurso BahiaIngenieria Gas)
 
 		(necesitaRecurso VCE Mineral)
 		(necesitaRecurso Marine Mineral)
 		(necesitaRecurso Segador Mineral)
 		(necesitaRecurso Segador Gas)
+
+		(necesitaRecurso ImpulsorSegador Gas)
+		(necesitaRecurso ImpulsorSegador Mineral)
 
 		(esEdificio barracones1 Barracones)
 		(esEdificio centroMando1 CentroDeMando)
@@ -124,6 +130,8 @@
 		(esUnidad marine1 Marine)
 		(esUnidad marine2 Marine)
 		(esUnidad segador1 Segador)
+
+		(esInvestigacion impulsorSegador1 ImpulsorSegador)
 
 		(asignarNodoRecursoLocalizacion Mineral l2_2)
 		(asignarNodoRecursoLocalizacion Mineral l5_1)
@@ -140,7 +148,7 @@
 			;(entidadEnLocalizacion barracones1 l3_2)
 			(entidadEnLocalizacion marine1 l5_5)
 			(entidadEnLocalizacion marine2 l2_2)
-			(entidadEnLocalizacion segador1 l2_2)
+			;(entidadEnLocalizacion segador1 l2_2)
 		)
 	)
 )

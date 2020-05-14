@@ -2,9 +2,10 @@
 	(:requirements :strips :adl :fluents)
 
 	(:types
-		entidad localizacion investigacion - object
+		entidad localizacion - object
 		unidad - entidad
 		edificio - entidad
+		investigacion - entidad
 		recurso - object
 		tipoEdificio - edificio
 		tipoUnidad - unidad
@@ -41,7 +42,8 @@
 
 		(esEdificio ?edif - edificio ?tipoEdif - tipoEdificio)
 		(esUnidad ?unid - unidad ?tUnid - tipoUnidad)
-		(heInvestigado ?invest - tipoInvestigacion)
+		(esInvestigacion ?inves - investigacion ?tInves - tipoInvestigacion )
+		(heInvestigado ?invest - investigacion)
 	)
 
 	(:action navegar
@@ -114,10 +116,11 @@
 					(and
 						(estaExtrayendoRecurso Mineral)
 						(estaExtrayendoRecurso Gas)
-						(heInvestigado ImpulsorSegador)
+						(exists (?t - investigacion) (and (heInvestigado ImpulsorSegador) (esInvestigacion ?t ImpulsorSegador)) )
+
 					)
 				)
-				
+
 				(entidadEnLocalizacion ?edificio ?loc)
 
 				(imply (esEdificio ?edificio CentroDeMando) (esUnidad ?unid VCE))
@@ -134,13 +137,27 @@
 
 
 	(:action investigar
-		:parameters ()
+		:parameters (?inves - investigacion ?edif - edificio)
 
 		:precondition
-			()
+			(and
+				(esEdificio ?edif BahiaIngenieria)
+				(exists (?l - localizacion) (entidadEnLocalizacion ?edif ?l) )
+				(not (heInvestigado ?inves))
+				(forall (?r - tipoRecurso)
+					(exists (?t - tipoInvestigacion)
+						(and
+							(esInvestigacion ?inves ?t)
+							(imply (necesitaRecurso ?t ?r) (estaExtrayendoRecurso ?r) )
+						)
+					)
+				)
+			)
 
 		:effect
-			()
+			(and
+				(heInvestigado ?inves)
+			)
 	)
 
 )
