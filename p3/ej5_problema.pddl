@@ -122,7 +122,7 @@
 		(esEdificio centroMando1 CentroDeMando)
 		(esEdificio centroMando2 CentroDeMando)
 		(esEdificio extractor1 Extractor)
-		(esEdificio BahiaIngenieria BahiaIngenieria)
+		(esEdificio bahia1 BahiaIngenieria)
 
 		(esUnidad vce1 VCE)
 		(esUnidad vce2 VCE)
