@@ -35,7 +35,7 @@
 		(entidadEnLocalizacion ?obj - entidad ?x - localizacion)
 		(caminoEntre ?x1 - localizacion ?x2 - localizacion)
 		(asignarNodoRecursoLocalizacion ?r - recurso ?x - localizacion)
-		(estaExtrayendoRecurso ?rec - recurso ?loc - localizacion)
+		(estaExtrayendoRecurso ?rec - recurso)
 		; cambiamos edificio por entidad
 		(necesitaRecurso ?x - entidad ?rec - recurso)
 
@@ -51,6 +51,7 @@
 		(necesitaRecurso ?x - entidad ?rec - recurso)
 		(recursoAlmacenado ?tipoRecurso - tipoRecurso )
 		(topeRecurso ?tipoRecurso - tipoRecurso)
+		(unidadesExtrayendo ?tipoRecurso - tipoRecurso)
 	)
 
 	(:action navegar
@@ -70,7 +71,7 @@
 	)
 
 	(:action asignar
-	  :parameters (?x - unidad ?rec - recurso ?loc - localizacion ?edi - edificio)
+	  :parameters (?x - unidad ?rec - tipoRecurso ?loc - localizacion ?edi - edificio)
 	  :precondition
 	  		(and
 				(entidadEnLocalizacion ?x ?loc)
@@ -83,12 +84,42 @@
 	  :effect
 	  		(and
 				(not (unidadLibre ?x))
-				(estaExtrayendoRecurso ?rec ?loc)
+				(estaExtrayendoRecurso ?rec)
+				(increase
+					(unidadesExtrayendo ?rec)
+					1
+				)
 			)
 	)
 
+	(:action desasignar
+		:parameters (?unid - unidad ?loc - localizacion ?rec - tipoRecurso)
+		:precondition
+			(and
+				(not (unidadLibre ?unid))
+				(entidadEnLocalizacion ?unid ?loc)
+				(asignarNodoRecursoLocalizacion ?rec ?loc)
+			)
+
+		:effect
+			(and
+				(unidadLibre ?unid)
+				(decrease
+					(unidadesExtrayendo ?rec)
+					1
+				)
+
+				(when (and (not (> (unidadesExtrayendo ?rec) 0) ) )
+					(and
+						(not (estaExtrayendoRecurso ?rec))
+					)
+				)
+			)
+
+	)
+
 	(:action construir
-	  :parameters (?unidad - unidad ?x - localizacion ?edificio - edificio)
+	  :parameters (?unidad - unidad ?x - localizacion ?edificio - edificio ?tEdif - tipoEdificio)
 	  :precondition
 	  		(and
 				(unidadLibre ?unidad)
@@ -97,14 +128,17 @@
 				(not (exists (?edif - edificio) (entidadEnLocalizacion ?edif ?x) ) )
 
 				(forall (?r - tipoRecurso)
-					(exists (?t - tipoEdificio)
-						(and
-							(esEdificio ?edificio ?t)
-							(>=
-								(recursoAlmacenado ?r)
-								(necesitaRecurso ?t ?r)
-							)
+					(and
+						(esEdificio ?edificio ?tEdif)
+						(>=
+							(topeRecurso ?r)
+							(necesitaRecurso ?tEdif ?r)
 						)
+						(>=
+							(recursoAlmacenado ?r)
+							(necesitaRecurso ?tEdif ?r)
+						)
+
 					)
 				)
 
@@ -113,21 +147,21 @@
 	  :effect
 	  		(and
 				(entidadEnLocalizacion ?edificio ?x)
-				(forall (?r - tipoRecurso)
-					(exists (?t - tipoEdificio)
-						(and
-							(esEdificio ?edificio ?t)
-							(decrease
-								(recursoAlmacenado ?r)
-								(necesitaRecurso ?t ?r)
-							)
-						)
-					)
+				(decrease
+					(recursoAlmacenado Mineral)
+					(necesitaRecurso ?tEdif Mineral)
+				)
+				(decrease
+					(recursoAlmacenado Gas)
+					(necesitaRecurso ?tEdif Gas)
 				)
 
-				(when (esEdificio ?edificio Deposito)
-					(increase (topeRecurso Gas) 100)
-					(increase (topeRecurso Mineral) 100)
+
+				(when (and (esEdificio ?edificio Deposito) )
+					(and
+						(increase (topeRecurso Gas) 100)
+						(increase (topeRecurso Mineral) 100)
+					)
 				)
 			)
 	)
@@ -164,7 +198,7 @@
 
 
 	(:action investigar
-		:parameters (?inves - investigacion ?edif - edificio)
+		:parameters (?inves - investigacion ?edif - edificio ?tInves - tipoInvestigacion)
 
 		:precondition
 			(and
@@ -172,15 +206,17 @@
 				(exists (?l - localizacion) (entidadEnLocalizacion ?edif ?l) )
 				(not (heInvestigado ?inves))
 				(forall (?r - tipoRecurso)
-					(exists (?t - tipoInvestigacion)
-						(and
-							(esInvestigacion ?inves ?t)
-							(>=
-								(recursoAlmacenado ?r)
-								(necesitaRecurso ?t ?t)
-							)
-							;(imply (!= (necesitaRecurso ?t ?r) 0) (estaExtrayendoRecurso ?r) )
+					(and
+						(esInvestigacion ?inves ?tInves)
+						(>=
+							(recursoAlmacenado ?r)
+							(necesitaRecurso ?tInves ?r)
 						)
+						(>=
+							(topeRecurso ?r)
+							(necesitaRecurso ?tInves ?r)
+						)
+						;(imply (!= (necesitaRecurso ?t ?r) 0) (estaExtrayendoRecurso ?r) )
 					)
 				)
 			)
@@ -188,36 +224,39 @@
 		:effect
 			(and
 				(heInvestigado ?inves)
-			)
-			(forall (?r - tipoRecurso)
-				(exists (?t - tipoInvestigacion)
-					(and
-						(esInvestigacion ?inves ?t)
-						(decrease
-							(recursoAlmacenado ?r)
-							(necesitaRecurso ?t ?t)
-						)
-						;(imply (!= (necesitaRecurso ?t ?r) 0) (estaExtrayendoRecurso ?r) )
-					)
+				(decrease
+					(recursoAlmacenado Mineral)
+					(necesitaRecurso ?tInves Mineral)
+				)
+				(decrease
+					(recursoAlmacenado Gas)
+					(necesitaRecurso ?tInves Gas)
 				)
 			)
+
 	)
 
 	(:action recolectar
-		:parameters (?recurso - tipoRecurso)
+		:parameters (?rec - tipoRecurso)
 		:precondition
-			(
-				(estaExtrayendoRecurso ?recurso)
+			(and
+				(estaExtrayendoRecurso ?rec)
+				(<
+					(recursoAlmacenado ?rec)
+					(topeRecurso ?rec)
+				)
 
 			)
 
+
 		:effect
-			(
-				(forall (?l - localizacion)
-					(when
-
+			(and
+				(increase
+					(recursoAlmacenado ?rec)
+					(*
+						10
+						(unidadesExtrayendo ?rec)
 					)
-
 				)
 			)
 	)
