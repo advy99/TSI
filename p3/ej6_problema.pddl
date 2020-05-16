@@ -1,7 +1,7 @@
 
-(define (problem ejercicio1)
+(define (problem ejercicio6)
 
-	(:domain ejercicio_1)
+	(:domain ejercicio_6)
 
 	(:objects
 		; mapa 5 x 5

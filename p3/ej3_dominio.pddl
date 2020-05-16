@@ -1,4 +1,4 @@
-(define (domain ejercicio_1)
+(define (domain ejercicio_3)
 	(:requirements :strips :adl :fluents)
 
 	(:types

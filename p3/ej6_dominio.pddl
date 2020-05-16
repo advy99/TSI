@@ -1,4 +1,4 @@
-(define (domain ejercicio_1)
+(define (domain ejercicio_6)
 	(:requirements :strips :adl :fluents)
 
 	(:types
@@ -35,7 +35,7 @@
 		(entidadEnLocalizacion ?obj - entidad ?x - localizacion)
 		(caminoEntre ?x1 - localizacion ?x2 - localizacion)
 		(asignarNodoRecursoLocalizacion ?r - recurso ?x - localizacion)
-		(estaExtrayendoRecurso ?rec - recurso)
+		(estaExtrayendoRecurso ?rec - recurso ?loc - localizacion)
 		; cambiamos edificio por entidad
 		(necesitaRecurso ?x - entidad ?rec - recurso)
 
@@ -83,7 +83,7 @@
 	  :effect
 	  		(and
 				(not (unidadLibre ?x))
-				(estaExtrayendoRecurso ?rec)
+				(estaExtrayendoRecurso ?rec ?loc)
 			)
 	)
 
@@ -213,7 +213,12 @@
 
 		:effect
 			(
+				(forall (?l - localizacion)
+					(when
 
+					)
+
+				)
 			)
 	)
 
