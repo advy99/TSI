@@ -6,7 +6,7 @@
 	(:objects
 		; mapa 5 x 5
 		l1_1 l1_2 l1_3 l1_4 l1_5 l2_1 l2_2 l2_3 l2_4 l2_5 l3_1 l3_2 l3_3 l3_4 l3_5 l4_1 l4_2 l4_3 l4_4 l4_5 l5_1 l5_2 l5_3 l5_4 l5_5 - localizacion
-		centroMando1 centroMando2 barracones1 extractor1 bahia1 - edificio
+		centroMando1 centroMando2 barracones1 extractor1 bahia1 deposito1 deposito2 - edificio
 		vce1 vce2 vce3 - unidad
 		marine1 marine2 segador1 - unidad
 		impulsorSegador1 - investigacion
@@ -106,24 +106,33 @@
 		(= (necesitaRecurso CentroDeMando Mineral) 150)
 		(= (necesitaRecurso CentroDeMando Gas) 50)
 		(= (necesitaRecurso Barracones Mineral) 150)
+		(= (necesitaRecurso Barracones Gas) 0)
 		(= (necesitaRecurso Extractor Mineral) 75)
+		(= (necesitaRecurso Extractor Gas) 0)
 		(= (necesitaRecurso BahiaIngenieria Mineral) 125)
+		(= (necesitaRecurso BahiaIngenieria Gas) 0)
+		(= (necesitaRecurso Deposito Mineral) 75)
+		(= (necesitaRecurso Deposito Gas) 25)
 		; en este nos dicen que no necesita Gas
 		;(necesitaRecurso BahiaIngenieria Gas)
 
 		(= (necesitaRecurso VCE Mineral) 50)
+		(= (necesitaRecurso VCE Gas) 0)
 		(= (necesitaRecurso Marine Mineral) 50)
+		(= (necesitaRecurso Marine Gas) 0)
 		(= (necesitaRecurso Segador Mineral) 50)
 		(= (necesitaRecurso Segador Gas) 50)
 
-		(= (necesitaRecurso ImpulsorSegador Gas) 200)
 		(= (necesitaRecurso ImpulsorSegador Mineral) 50)
+		(= (necesitaRecurso ImpulsorSegador Gas) 200)
 
 		(esEdificio barracones1 Barracones)
 		(esEdificio centroMando1 CentroDeMando)
 		(esEdificio centroMando2 CentroDeMando)
 		(esEdificio extractor1 Extractor)
-		(esEdificio BahiaIngenieria BahiaIngenieria)
+		(esEdificio bahia1 BahiaIngenieria)
+		(esEdificio deposito1 Deposito)
+		(esEdificio deposito2 Deposito)
 
 		(esUnidad vce1 VCE)
 		(esUnidad vce2 VCE)
@@ -143,10 +152,13 @@
 		(asignarNodoRecursoLocalizacion Gas l4_4)
 
 
-		(= (recursoAlmacenado Gas) 0)
-		(= (recursoAlmacenado Mineral) 0)
+		(= (recursoAlmacenado Gas) 100)
+		(= (recursoAlmacenado Mineral) 100)
 		(= (topeRecurso Gas) 100)
 		(= (topeRecurso Mineral) 100)
+
+		(= (unidadesExtrayendo Mineral) 0)
+		(= (unidadesExtrayendo Gas) 0)
 	)
 
 	(:goal
