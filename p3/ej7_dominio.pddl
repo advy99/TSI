@@ -177,6 +177,11 @@
 						(increase (topeRecurso Mineral) 100)
 					)
 				)
+
+				(increase
+					(tiempoTrascurrido)
+					(tiempoNecesario ?tEdif)
+				)
 			)
 	)
 
@@ -224,6 +229,10 @@
 				(decrease
 					(recursoAlmacenado Gas)
 					(necesitaRecurso ?tUnid Gas)
+				)
+				(increase
+					(tiempoTrascurrido)
+					(tiempoNecesario ?tUnid)
 				)
 			)
 
@@ -290,6 +299,10 @@
 						25
 						(unidadesExtrayendo ?rec)
 					)
+				)
+				(increase
+					(tiempoTrascurrido)
+					(tiempoRecolectar)
 				)
 			)
 	)
