@@ -274,6 +274,10 @@
 					(recursoAlmacenado Gas)
 					(necesitaRecurso ?tInves Gas)
 				)
+				(increase
+					(tiempoTrascurrido)
+					(tiempoNecesario ?tInves)
+				)
 			)
 
 	)
