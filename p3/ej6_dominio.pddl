@@ -167,31 +167,50 @@
 	)
 
 	(:action reclutar
-		:parameters (?unid - unidad ?edificio - edificio ?loc - localizacion)
+		:parameters (?unid - unidad ?tUnid - tipoUnidad ?edificio - edificio ?loc - localizacion)
 		:precondition
 			(and
+				(esUnidad ?unid ?tUnid)
 				(not (exists (?l - localizacion) (and  (entidadEnLocalizacion ?unid ?l)) ) )
-				(imply (or (esUnidad ?unid VCE) (esUnidad ?unid Marine) ) (estaExtrayendoRecurso Mineral) )
+
+				(forall (?tRes - tipoRecurso)
+					(and
+						(>=
+							(topeRecurso ?tRes)
+							(necesitaRecurso ?tUnid ?tRes)
+						)
+						(>=
+							(recursoAlmacenado ?tRes)
+							(necesitaRecurso ?tUnid ?tRes)
+						)
+					)
+				)
+
 				(imply
 					(esUnidad ?unid Segador)
 					(and
-						(estaExtrayendoRecurso Mineral)
-						(estaExtrayendoRecurso Gas)
 						(exists (?t - investigacion) (and (heInvestigado ?t) (esInvestigacion ?t ImpulsorSegador)) )
-
 					)
 				)
 
 				(entidadEnLocalizacion ?edificio ?loc)
 
-				(imply (esEdificio ?edificio CentroDeMando) (esUnidad ?unid VCE))
-				(imply (esEdificio ?edificio Barracones) (or  (esUnidad ?unid Marine) (esUnidad ?unid Segador) ) )
+				(imply (esUnidad ?unid VCE) (esEdificio ?edificio CentroDeMando) )
+				(imply (or  (esUnidad ?unid Marine) (esUnidad ?unid Segador) ) (esEdificio ?edificio Barracones) )
 			)
 
 		:effect
 			( and
 				(entidadEnLocalizacion ?unid ?loc)
 				(unidadLibre ?unid)
+				(decrease
+					(recursoAlmacenado Mineral)
+					(necesitaRecurso ?tUnid Mineral)
+				)
+				(decrease
+					(recursoAlmacenado Gas)
+					(necesitaRecurso ?tUnid Gas)
+				)
 			)
 
 	)
@@ -254,7 +273,7 @@
 				(increase
 					(recursoAlmacenado ?rec)
 					(*
-						10
+						25
 						(unidadesExtrayendo ?rec)
 					)
 				)
