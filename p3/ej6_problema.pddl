@@ -6,7 +6,7 @@
 	(:objects
 		; mapa 5 x 5
 		l1_1 l1_2 l1_3 l1_4 l1_5 l2_1 l2_2 l2_3 l2_4 l2_5 l3_1 l3_2 l3_3 l3_4 l3_5 l4_1 l4_2 l4_3 l4_4 l4_5 l5_1 l5_2 l5_3 l5_4 l5_5 - localizacion
-		centroMando1 centroMando2 barracones1 extractor1 bahia1 deposito1 - edificio
+		centroMando1 centroMando2 barracones1 extractor1 extractor2 bahia1 deposito1 - edificio
 		vce1 vce2 vce3 vce4 vce5 - unidad
 		marine1 marine2 segador1 - unidad
 		impulsorSegador1 - investigacion
@@ -128,6 +128,7 @@
 		(esEdificio centroMando1 CentroDeMando)
 		(esEdificio centroMando2 CentroDeMando)
 		(esEdificio extractor1 Extractor)
+		(esEdificio extractor2 Extractor)
 		(esEdificio bahia1 BahiaIngenieria)
 		(esEdificio deposito1 Deposito)
 

@@ -221,12 +221,13 @@
 
 		:precondition
 			(and
+				(esInvestigacion ?inves ?tInves)
 				(esEdificio ?edif BahiaIngenieria)
 				(exists (?l - localizacion) (entidadEnLocalizacion ?edif ?l) )
 				(not (heInvestigado ?inves))
 				(forall (?r - tipoRecurso)
 					(and
-						(esInvestigacion ?inves ?tInves)
+
 						(>=
 							(recursoAlmacenado ?r)
 							(necesitaRecurso ?tInves ?r)
@@ -235,7 +236,6 @@
 							(topeRecurso ?r)
 							(necesitaRecurso ?tInves ?r)
 						)
-						;(imply (!= (necesitaRecurso ?t ?r) 0) (estaExtrayendoRecurso ?r) )
 					)
 				)
 			)
