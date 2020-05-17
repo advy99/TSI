@@ -54,21 +54,33 @@
 		(unidadesExtrayendo ?tipoRecurso - tipoRecurso)
 		(tiempoNecesario ?ent - entidad)
 		(tiempoTrascurrido)
+
+		(tiempoRecolectar)
+		(distanciaLocalizaciones)
+		(velocidad ?tUnid - tipoUnidad)
 	)
 
 	(:action navegar
-	  :parameters (?unidad - unidad ?x ?y - localizacion)
+	  :parameters (?unidad - unidad ?tUnid - tipoUnidad ?x ?y - localizacion)
 	  :precondition
 	  		(and
 				(entidadEnLocalizacion ?unidad ?x)
 				(caminoEntre ?x ?y)
 				(unidadLibre ?unidad)
+				(esUnidad ?unidad ?tUnid)
 			)
 
 	  :effect
 	  		(and
 				(entidadEnLocalizacion ?unidad ?y)
 				(not (entidadEnLocalizacion ?unidad ?x))
+				(increase
+					(tiempoTrascurrido)
+					(*
+						(distanciaLocalizaciones)
+						(velocidad ?tUnid)
+					)
+				)
 			)
 	)
 

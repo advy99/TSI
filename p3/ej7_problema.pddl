@@ -172,6 +172,13 @@
 		(= (tiempoNecesario Marine) 18)
 		(= (tiempoNecesario Segador) 32)
 		(= (tiempoNecesario ImpulsorSegador) 120)
+
+		(= (tiempoRecolectar) 10)
+		(= (distanciaLocalizaciones) 15)
+
+		(= (velocidad VCE) 1.5)
+		(= (velocidad Marine) 1)
+		(= (velocidad Segador) 0.5)
 	)
 
 	(:goal
@@ -183,4 +190,5 @@
 			(entidadEnLocalizacion segador1 l2_2)
 		)
 	)
+	(:metric minimize (tiempoTrascurrido))
 )
