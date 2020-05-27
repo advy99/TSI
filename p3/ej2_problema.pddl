@@ -95,7 +95,7 @@
 		(caminoEntre l5_5 l5_4)
 
 		; posiciones de las entidades
-		; los barracones están sin construir
+		; los barracones y extractor están sin construir
 		(entidadEnLocalizacion centroMando1 l1_1)
 		(entidadEnLocalizacion vce1 l1_1)
 		(entidadEnLocalizacion vce2 l1_1)
