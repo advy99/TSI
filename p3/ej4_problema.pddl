@@ -6,6 +6,8 @@
 	(:objects
 		; mapa 5 x 5
 		l1_1 l1_2 l1_3 l1_4 l1_5 l2_1 l2_2 l2_3 l2_4 l2_5 l3_1 l3_2 l3_3 l3_4 l3_5 l4_1 l4_2 l4_3 l4_4 l4_5 l5_1 l5_2 l5_3 l5_4 l5_5 - localizacion
+
+		; edificios y unidades a usar
 		centroMando1 centroMando2 barracones1 extractor1 - edificio
 		vce1 vce2 vce3 - unidad
 		marine1 marine2 segador1 - unidad
@@ -94,14 +96,14 @@
 		(caminoEntre l5_5 l4_5)
 		(caminoEntre l5_5 l5_4)
 
-
+		; ahora solo se encuentran disponibles al inicio el centro
+		; de mando y un VCE
 		(entidadEnLocalizacion centroMando1 l1_1)
 		(entidadEnLocalizacion vce1 l1_1)
 
 		(unidadLibre vce1)
-		(unidadLibre vce2)
-		(unidadLibre vce3)
 
+		; establecemos que recursos necesitan cada cosa
 		(necesitaRecurso Barracones Mineral)
 		(necesitaRecurso CentroDeMando Gas)
 		(necesitaRecurso CentroDeMando Mineral)
@@ -112,11 +114,13 @@
 		(necesitaRecurso Segador Mineral)
 		(necesitaRecurso Segador Gas)
 
+		; establecemos que tipos de edificios son
 		(esEdificio barracones1 Barracones)
 		(esEdificio centroMando1 CentroDeMando)
 		(esEdificio centroMando2 CentroDeMando)
 		(esEdificio extractor1 Extractor)
 
+		; establecemos que tipo de unidades son
 		(esUnidad vce1 VCE)
 		(esUnidad vce2 VCE)
 		(esUnidad vce3 VCE)
@@ -125,6 +129,7 @@
 		(esUnidad marine2 Marine)
 		(esUnidad segador1 Segador)
 
+		; asignamos los recursos a localizaciones
 		(asignarNodoRecursoLocalizacion Mineral l2_2)
 		(asignarNodoRecursoLocalizacion Mineral l5_1)
 		(asignarNodoRecursoLocalizacion Mineral l3_4)
@@ -136,8 +141,7 @@
 
 	(:goal
 		(and
-			;(estaExtrayendoRecurso Gas)
-			;(entidadEnLocalizacion barracones1 l3_2)
+			; la meta es tener dos marines y un segador
 			(entidadEnLocalizacion marine1 l5_5)
 			(entidadEnLocalizacion marine2 l2_2)
 			(entidadEnLocalizacion segador1 l2_2)
