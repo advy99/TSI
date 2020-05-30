@@ -48,7 +48,7 @@
 \definecolor{listing-javadoc-comment}{HTML}{006CA9}
 
 \lstdefinestyle{eisvogel_listing_style}{
-  language         = c++,
+  language         = lisp,
 %$if(listings-disable-line-numbers)$
 %  xleftmargin      = 0.6em,
 %  framexleftmargin = 0.4em,
@@ -171,7 +171,85 @@
 
 El objetivo de esta práctica consiste en diseñar e implementar un dominio de planificación clásico basado en el videojuego StarCraft. Para cada ejercicio tendremos que implementar dos ficheros en el lenguaje PDDL, uno para describir el dominio del ejercicio y otro para definir el problema. Para ejecutar los ejercicios utilizaremos el planificador Metric-FF para obtener el plan.
 
+En el dominio declararemos todos los requisitos, tipos, constantes, funciones, predicados y acciones que se podrá tener o realizar nuestro mundo, mientras que en el problema declararemos objetos, especificaremos su estado inicial en el mundo basándonos en el dominio y estableceremos una meta. El objetivo de cada ejercicio es obtener un plan para que en el mundo basado en el dominio se cumpla dicha meta.
+
+Cada ejercicio está basado en el anterior, por lo que los ficheros estarán basados e incluirán todo lo del ejercicio anterior a no ser que se especifique que se ha modificado.  Aun así, para distinguir el dominio y problema de cada ejercicio usare como nombre de dominio ejercicio\_N y como nombre del problema ejercicioN, por ejemplo, para el ejercicio 1 el dominio se llamará ejercicio\_1 y el problema será problema1.
+
 \section{Ejercicio 1}
+
+Para este ejercicio implementaré toda la base que utilizaremos para el resto de los ejercicios, por lo que el resto de ejercicios serán modificaciones del ejercicio anterior. 
+
+En este ejercicio se nos pide representar los tipos básicos, constantes para referirnos a algunos de esos tipos, distintos predicados y tres acciones distintas, todo esto lo comentaré más en detalle en el desarrollo de su implementación. Una vez que tengamos dicho dominio definido se nos pide crear un problema de un mapa 5x5 donde se encuentre un centro de mando, tres unidades VCE, tres nodos de Mineral y dos de Gas. Se nos pide como objetivo construir un edificio Barracones.
+
+
+\subsection{Dominio}
+
+Para empezar, al definir el fichero de dominio declararemos los requisitos del dominio usando la sección \texttt{:requirements}, que serán los que se nos pide en todos los ejercicios, es decir, strips, adl y fluents.
+
+\subsubsection{Tipos:}
+
+Tras esto definimos los tipos que se nos pide para desarrollar la práctica. Usaremos los siguientes tipos que definiremos en la sección \texttt{:types}:
+
+\begin{enumerate}
+	\item localizacion: subtipo de object
+	\item entidad: subtipo de object
+	\item recurso: subtipo de object
+	\item edificio: subtipo de entidad
+	\item unidad: subtipo de entidad
+	\item tipoRecurso: subtipo de recurso
+	\item tipoEdificio: subtipo de edificio
+	\item tipoUnidad: subtipo de unidad
+\end{enumerate}
+
+Los edificios y unidades, al poder estar posicionadas en distintas localizaciones y como, veremos en los siguientes ejercicios, tener predicados en común, serán ambos un subtipo de entidad, de forma que, por ejemplo, para saber si un edificio o una unidad está en una localización utilizaremos el tipo entidad para referirnos a cualquiera de estos dos tipos.
+
+Al hacer uso de constantes para referirnos a las clases en las acciones y algunos predicados usaremos las clases que tienen prefijo tipo, esto lo haremos para enlazar las constantes con los objetos del problema y así poder generalizar en lugar de generar muchos objetos en el problema cuando podemos referirnos a estos como constantes.
+
+
+\subsubsection{Constantes:}
+
+Definidas en la sección \texttt{:constants}. Utilizaremos constantes para en el dominio poder referirnos a todos los objetos de un tipo, evitando tener que declarar los objetos en el problema y por tanto obtener una solución más generalizada para los problemas, las constantes que usaremos serán:
+
+\begin{enumerate}
+	\item VCE: de tipo tipoUnidad
+	\item CentroDeMando: de tipo tipoEdificio
+	\item Barracones: de tipo tipoEdificio
+	\item Mineral: de tipo tipoRecurso
+	\item Gas: de tipo tipoRecurso
+\end{enumerate}
+
+
+\subsubsection{Predicados:}
+
+
+Definidas en la sección \texttt{:predicates}. Los predicados serán los que definan el estado del mundo, el entorno. Para definir el mundo podemos utilizar estos predicados:
+
+\begin{itemize}
+	\item (entidadEnLocalizacion ?obj - entidad x - localizacion): Nos servirá para representar que una en localización se encuentra una entidad, ya sea un edificio o una unidad.
+	\item (caminoEntre ?x - localizacion ?y - localizacion): Nos servirá para representar que dos localizaciones están conectadas.
+	\item (asignarNodoRecursoLocalizacion ?r - recurso ?x - localizacion): Servirá para representar que en una localización hay un nodo de recurso.
+	\item (estaExtrayendoRecurso ?rec - recurso): Para representar que se extra extrayendo un recurso.
+	\item (necesitaRecurso ?x - tipoEdificio ?rec - tipoRecurso): Para representar que cierto edificio necesita cierto recurso para ser construido.
+	\item (unidadLibre ?u - unidad): Para representar que cierta unidad del problema está libre (no está asignada a un recurso).
+	\item (esEdificio ?edif - edificio ?tEdif - tipoEdificio): Representa que un edificio es de un tipo.
+	\item (esUnidad ?u - unidad ?tU - tipoUnidad): Representa que una unidad es de un tipo.
+	
+\end{itemize}
+
+Con estos predicados representaremos el mundo, y además, en conjunto con otros predicados, podremos inferir otras cosas, como por ejemplo, si una unidad no está libre y está en el mismo lugar que un nodo de Gas, esa unidad está extrayendo Gas, de ahí que no tengamos el predicado para saber si cierta unidad está extrayendo en cierta posición.
+
+\subsubsection{Acciones:}
+
+Cada una definida en una sección \texttt{:action}. En este primer ejercicio se pueden realizar tres acciones: navegar por el mapa, asignar un VCE a extraer un recurso y construir un edificio. Cada acción para poder ser realizada necesitará cumplir ciertas precondiciones, y cada acción tendrá ciertos efectos.
+
+\begin{itemize}
+	\item Navegar: Recibe como parámetros una unidad (?u) y dos localizaciones (?x ?y). Como precondiciones la unidad tiene que estar en la primera localización (entidadEnLocalizacion ?u ?x), tiene que existir un camino entre las dos localizaciones (caminoEntre ?x ?y) y la unidad tiene que estar libre (unidadLibre ?u). Como efecto, la unidad deja de estar en la primera localización (not (entidadEnLocalizacion ?u ?x)) y pasa a estar en la segunda (entidadEnLocalizacion ?u ?y).
+	\item Asignar: Recibe como parámetros una unidad (?u), un recurso (?r) y una localización (?x). Como precondiciones, la unidad tiene que estar en la localización dada (entidadEnLocalizacion ?u ?x), la localización tiene que tener un nodo del recurso dado (asignarNodoRecursoLocalizacion ?r ?l) y la unidad tiene que estar libre (unidadLibre ?u). Como efecto la unidad deja de esta libre (not (unidadLibre ?u)) y se está extrayendo el recurso (estaExtrayendoRecurso ?rec).
+	\item Construir: Recibe como parámetros una unidad (?u), una localización (?x), un edificio (?e) y un recurso (?r). Como precondición la unidad ha de estar libre (unidadLibre ?u), la unidad tiene que estar en dicha localización (entidadEnLocalización ?u ?x) y además existe un tipo de edificio (?tEdif), el edificio dado es del tipo ?t (esEdificio ?e ?t) tal que ese tipo de edificio necesita el recurso dado (necesitaRecurso ?t ?r) y además se está extrayendo (estaExtrayendo ?r). Como efecto, la entidad del edificio está en la localización dada. (entidadEnLocalizacion ?e ?x)
+\end{itemize}
+
+
+\subsection{Problema}
 
 
 
