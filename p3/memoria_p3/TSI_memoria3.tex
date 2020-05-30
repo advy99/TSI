@@ -257,7 +257,7 @@ El fichero del problema se compone de cinco partes esenciales:
 
 \subsubsection{Dominio:}
 
-Se representa usando \texttt{(:domain dominio)} en PDDL. Esta sección indica el dominio donde estará definido el problema, en nuestro caso será el dominio ejercicio_1.
+Se representa usando \texttt{(:domain dominio)} en PDDL. Esta sección indica el dominio donde estará definido el problema, en nuestro caso será el dominio ejercicio\_1.
 
 \subsubsection{Objetos:}
 
@@ -274,6 +274,29 @@ Es importante que aunque como veremos más adelante, los barracones es el objeti
 
 Se representa usando \texttt{:init} en PDDL. En esta sección declararemos el estado inicial de los objetos usando los predicados del dominio.
 
+Para empezar representaremos todas las conexiones entre localizaciones. Para esto hemos usado el editor online de PDDL haciendo uso de la extensión propuesta en los foros de dudas para la práctica en PRADO.
+
+Además hemos establecido posiciones iniciales arbitrarias para las tres unidades VCE y el centro de mando, así como establecido los nodos de recursos. Las posiciones de los recursos las hemos establecido haciendo uso de las constantes, de forma que no es necesario declarar tres minerales y dos objetos de tipo gas. También he establecido el tipo de las unidades y los edificios usados para enlazarlos con sus constantes.
+
+\subsubsection{Meta:}
+
+Se representa usando \texttt{:goal} en PDDL. Esta sección servirá para definir el objetivo del plan, es decir, PDDL intentará encontrar un plan (sucesión de acciones) que haga verdadero la meta. Para este ejercicio es que el objeto barracones esté en una posición escogida de forma arbitraria.
+
+\subsubsection{Métrica:}
+
+Se representa usando \texttt{:metric} en PDDL. En principio no utilizaremos esta sección hasta el último ejercicio. Usando esta sección podemos establecer una métrica propia. Por defecto la métrica es minimizar la longitud del plan, es decir, obtener el plan que necesite menos acciones.
+
+
+\subsection{Solución:}
+
+Tras declarar el dominio y el problema, al ejecutar los ficheros PDDL sobre Metric-FF obtenemos el siguiente plan:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{plan1.png}
+	\caption{Plan obtenido en el ejercicio 1.}
+	\label{plan1}
+\end{figure}
 
 \section{Ejercicio 2}
 
