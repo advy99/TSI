@@ -249,8 +249,30 @@ Cada una definida en una sección \texttt{:action}. En este primer ejercicio se 
 \end{itemize}
 
 
+Con todos estos tipos, constantes y posibles acciones podemos definir un problema con el que, usando las acciones, Metric-FF encuentre una secuencia de acciones que resuelvan el problema.
+
 \subsection{Problema}
 
+El fichero del problema se compone de cinco partes esenciales:
+
+\subsubsection{Dominio:}
+
+Se representa usando \texttt{(:domain dominio)} en PDDL. Esta sección indica el dominio donde estará definido el problema, en nuestro caso será el dominio ejercicio_1.
+
+\subsubsection{Objetos:}
+
+Se representa usando \texttt{:objects} en PDDL. En esta sección declararemos todos los objetos que intervienen en el problema.
+
+Para empezar declararemos 25 objetos de tipo localización para representar el mapa.
+
+También declararemos tres VCE de tipo unidad, un centro de mando de tipo edificio y unos barracones de tipo edificio, y con esto hemos declarado todos los objetos que nos pide el problema.
+
+Es importante que aunque como veremos más adelante, los barracones es el objetivo a construir, sin embargo han de ser declarados como objeto para que sea capaz de construir dicho objeto.
+
+
+\subsubsection{Estado inicial:}
+
+Se representa usando \texttt{:init} en PDDL. En esta sección declararemos el estado inicial de los objetos usando los predicados del dominio.
 
 
 \section{Ejercicio 2}
