@@ -17,3 +17,9 @@ src/source_list.txt
 *.iml
 *.md
 !src/src_Villegas_Yeguas_Antonio_David
+*.aux
+*.log
+*.out
+*.pdf
+*.synctex.gz
+
