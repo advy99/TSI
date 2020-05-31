@@ -416,14 +416,97 @@ Como vemos, antes de construir el centro de mando el VCE1 comienza a extraer min
 
 \section{Ejercicio 4}
 
+Este ejercicio nos pide añadir una nueva acción Reclutar, así como nuevas unidades, Marines y Segadores. El centro de mando podrá reclutar VCE y los barracones Marines y Segadores.
+
+\subsection{Dominio:}
+
+\subsubsection{Constantes:}
+
+He añadido constantes para representar las dos nuevas unidades.
+
+
+\subsubsection{Acciones:}
+
+He modificado la acción Asignar y Construir, ya que el guion nos dice que solo pueden extraer recursos y construir los VCE, luego a estas dos acciones le he añadido la precondición de que las unidades que realicen estas acciones sean VCE.
+
+
+Ahora existirá una nueva acción Reclutar. Como parámetros tiene la unidad a reclutar (?u), el edificio donde se está reclutando (?e) y la localización donde se encuentra el edificio (?x).
+
+Como precondición, no puede existir una localización donde esté la unidad, es decir, la unidad no puede estar ya reclutada, usando el predicado esUnidad en conjunto con la orden imply comprobaremos que tenemos los recursos necesarios. Usando el predicado esEdificio comprobaremos que se reclutan en los edificios correctos, es decir, si el edificio dado es un centro de mando, la unidad ha de ser de tipo VCE, si son unos barracones, de tipo Marine o Segador.
+
+Como efecto, usando el predicado entidadEnLocalización posicionamos la nueva unidad y además marcamos que está libre con unidadLibre.
+
+
+\subsection{Problema:}
+
+\subsubsection{Objetos:}
+
+Añadimos objetos para representar dos marines y un segador, como nos pide el ejercicio.
+
+\subsubsection{Estado inicial:}
+
+Ahora solo tenemos posicionados un centro de mando y un VCE en el mapa. Además se ha modificado los recursos necesarios y predicados iniciales para representar las necesidades de recursos y tipos de las nuevas unidades.
+
+\subsubsection{Meta:}
+
+Este ejercicio tiene como meta tener dos marines y un segador en posiciones arbitrarias.
+
+\subsection{Solución:}
+
+Tras ejecutar los archivos de dominio y problema sobre Metric-FF obtenemos el siguiente plan. Como nota añadir que debido a la longitud del plan, en la imagen he eliminado las acciones que simplemente son navegar por el mapa para que se vea más claramente que acciones está realizando.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{plan4.png}
+	\caption{Plan obtenido en el ejercicio 4.}
+	\label{plan4}
+\end{figure}
+
+
+
+
+
+
+
 
 \section{Ejercicio 5}
+
+
+\subsection{Dominio:}
+
+
+\subsection{Problema:}
+
+\subsection{Solución:}
+
+
+
 
 
 
 \section{Ejercicio 6}
 
+\subsection{Dominio:}
+
+
+\subsection{Problema:}
+
+\subsection{Solución:}
+
+
+
+
+
+
 
 \section{Ejercicio 7}
+
+
+\subsection{Dominio:}
+
+
+\subsection{Problema:}
+
+\subsection{Solución:}
 
 \end{document}
