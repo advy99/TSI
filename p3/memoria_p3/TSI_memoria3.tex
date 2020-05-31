@@ -276,7 +276,9 @@ Se representa usando \texttt{:init} en PDDL. En esta sección declararemos el es
 
 Para empezar representaremos todas las conexiones entre localizaciones. Para esto hemos usado el editor online de PDDL haciendo uso de la extensión propuesta en los foros de dudas para la práctica en PRADO.
 
-Además hemos establecido posiciones iniciales arbitrarias para las tres unidades VCE y el centro de mando, así como establecido los nodos de recursos. Las posiciones de los recursos las hemos establecido haciendo uso de las constantes, de forma que no es necesario declarar tres minerales y dos objetos de tipo gas. También he establecido el tipo de las unidades y los edificios usados para enlazarlos con sus constantes.
+Además hemos establecido posiciones iniciales arbitrarias para las tres unidades VCE y el centro de mando, así como establecido los nodos de recursos. Las posiciones de los recursos las hemos establecido haciendo uso de las constantes, de forma que no es necesario declarar tres minerales y dos objetos de tipo gas. También he establecido el tipo de las unidades y los edificios usados para enlazarlos con sus constantes, así como los recursos que necesita cada edificio según nos marca el guión.
+
+Todo esto se realiza con los predicados del dominio, explicados en los apartados anteriores.
 
 \subsubsection{Meta:}
 
@@ -300,10 +302,69 @@ Tras declarar el dominio y el problema, al ejecutar los ficheros PDDL sobre Metr
 
 \section{Ejercicio 2}
 
+Para este ejercicio se nos pide modificar el anterior para que solo se pueda extraer el recurso Gas si se dispone de un nuevo edificio, el Extractor, en un nodo de Gas.
+
+Al ser una modificación del ejercicio anterior solo indicaré los cambios.
+
+\subsection{Dominio:}
+
+\subsubsection{Constantes:}
+
+Se ha añadido una nueva constante para representar el nuevo edificio: Extractor, de tipo tipoEdificio.
+
+\subsubsection{Acciones:}
+
+Se ha modificado la acción Asignar. Ahora recibe un nuevo parámetro ?edi - edificio. Este parámetro lo usaremos para comprobar que si se va a extraer Gas, en la localización existe el edificio dado por parámetro y es un edificio Extractor.
+
+Para comprobar esta nueva precondición usaremos la orden imply, equivalente al operador lógico de la implicación:
+
+\begin{lstlisting}
+(imply (a) (b) )
+\end{lstlisting}
+
+Utilizar este operador es equivalente a realizar la comprobación $\neg a \lor b$. En nuestro caso $a$ será  (asignarNodoRecursoLocalzizacion Gas ?x), de forma que si en la localización no hay un nodo de Gas no tiene porque cumplirse $b$, sin embargo, si es Gas se tiene que cumplir $b$, que será (and (entidadEnLocalizacion ?edi ?x) (esEdificio ?edi Extractor) para comprobar que tenemos el edificio dado en la localización, y ese edificio es de tipo Extractor.
+
+\subsection{Problema:}
+
+\subsubsection{Objetos:}
+
+Ahora será necesario declarar al menos un objeto extractor por si necesita construirse en algún momento.
+
+\subsubsection{Estado inicial:}
+
+El estado inicial será el mismo, solo que añadiendo la inicialización para representar que el extractor.
+
+\subsubsection{Meta:}
+
+El objetivo de este ejercicio es el mismo que el del ejercicio anterior. Debido a que para construir los barracones no es necesario Gas y no se puede comprobar que construye el extractor de forma correcta, he realizado pruebas usando de meta que el objetivo sea estar extrayendo Gas para comprobar que funciona.
+
+\subsection{Solución:}
+
+Tras ejecutarlo con Metric-FF obtenemos:
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{plan2.png}
+	\caption{Plan obtenido en el ejercicio 2.}
+	\label{plan1}
+\end{figure}
+
+Y como vemos, al no extraer Gas, no construye el extractor, para comprobar que funciona he realizado una modificación en la meta (la versión entregada tiene la meta pedida en el guión, no esta modificación):
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{plan2Gas.png}
+	\caption{Plan obtenido en el ejercicio 2 con la meta modificada.}
+	\label{plan1}
+\end{figure}
+
+Y podemos ver como antes de extraer Gas es construido el Extractor.
 
 \section{Ejercicio 3}
 
-
+En este ejercicio tenemos que modificar la acción Construir para tener en cuenta que un edificio puede necesitar varios recursos.
 
 \section{Ejercicio 4}
 
