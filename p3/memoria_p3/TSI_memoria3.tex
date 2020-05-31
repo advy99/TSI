@@ -424,6 +424,9 @@ Este ejercicio nos pide añadir una nueva acción Reclutar, así como nuevas uni
 
 He añadido constantes para representar las dos nuevas unidades.
 
+\subsection{Predicados:}
+
+Se modifica el predicado necesitaRecurso, ahora el primer parámetro es de tipo entidad para poder indicar los recursos necesarios tanto para reclutar unidades como para construir edificios
 
 \subsubsection{Acciones:}
 
@@ -525,27 +528,90 @@ Tras lanzar Metric-FF obtenemos el siguiente plan (de nuevo, debido a la longitu
 
 \section{Ejercicio 6}
 
+Este ejercicio nos pide añadir una nueva función para recolectar recursos. Por cada trabajador asignado a un nodo se incrementa en 25 el recurso cada vez que realicemos la acción extraer, además debemos incluir una acción para desasignar un VCE a un nodo. También tenemos que modificar las acciones construir, reclutar e investigar para tener en cuenta de que ahora se necesita cierto número de recursos dependiendo del edificio, unidad o investigación. También tendremos un nuevo edificio, Deposito. En principio tendremos un límite de 100 para cada recurso, y al construir un deposito aumentaremos en 100 dicho límite para ambos recursos.
+
 \subsection{Dominio:}
 
+\subsubsection{Constantes:}
+
+Añadimos el nuevo edificio Deposito, de tipo tipoEdificio.
+
+\subsubsection{Predicados:}
+
+Eliminamos el predicado neccesitaRecurso, ya que ahora tiene que tener un valor numérico.
+
+\subsubsection{Funciones:}
+
+Se declaran en la sección \texttt{:functions}. Nos servirán para representar valores numéricos en el dominio y problema. El valor inicial lo estableceremos en el problema y lo modificaremos en las acciones, con las ordenes increase y decrease.
+
+Usaremos las siguientes funciones:
+
+\begin{itemize}
+	\item (necesitaRecurso ?x - entidad ?r - recurso): Para marcar cuanta cantidad de recurso requiere construir o reclutar una entidad.
+	\item (recursoAlmacenado ?tR - tipoRecurso): Para representar la cantidad de recurso que tenemos disponible.
+	\item (topeRecurso ?tR - tipoRecurso): Para representar el máximo de recurso que podemos almacenar.
+	\item (unidadesExtrayendo ?tipoRecurso - tipoRecurso): Para contar cuantas unidades están extrayendo cierto recurso.
+\end{itemize}
+
+\subsubsection{Acciones:}
+
+Se ha modificado la acción Asignar. Ahora como efecto se incrementa en 1 el valor de la función (unidadesExtrayendo ?rec), siendo ?rec el tipo de recurso que se está extrayendo.
+
+Se ha creado la función Desasignar,  dado una unidad, localización y un tipo de recurso, como precondición la unidad no esta libre, esta en la localización y en dicha localización hay un nodo del tipo de recurso, como efecto, la unidad pasa a estar libre, se decrementa en 1 el número de unidades extrayendo el recurso, y si el número de unidades extrayendo llega a cero, marcamos que no estamos extrayendo dicho recurso.
+
+Se han modificado las acciones construir, reclutar e investigar, todas de la misma forma, se comprueba a través de un forall todos los recursos y que para todos los recursos se tiene suficiente tamaño de almacén (esto para hacer la ejecución más rápida, directamente busca construir un Deposito si no se cumple) y suficiente almacenado para construir.
+
+El efecto de estas acciones se ha modificado para restar con la orden decrease el recurso almacenado tanto como necesitaRecurso la entidad reclutada/construida/investigada.
+
+Se ha añadido un efecto en construir, cuando se construye un Deposito se incrementan en 100 los topes de los recursos.
+
+Se ha añadido la acción de Recolectar. Como parámetro recibe el tipo de recurso, sus precondiciones es que se está extrayendo el recurso y tenemos suficiente espacio en los Depositos (el recurso almacenado es menor que el tope). Como acción se incrementa el recurso en 25 por el número de unidades extrayendo el recurso.
 
 \subsection{Problema:}
 
+\subsubsection{Objetos:}
+
+Hemos declarado más unidades y edificios para poder aprovechar al máximo todos los nodos de recursos (aunque al principio solo tengamos el centro de mando y un VCE).
+
+\subsubsection{Estado inicial:}
+
+He actualizado los recursos necesarios para cada entidad conforme a la tabla dada, así como establecido los topes de recursos a los indicados.
+
+\subsubsection{Meta:}
+
+Para este ejercicio tenemos la misma meta, tener dos marines y un segador.
+
 \subsection{Solución:}
 
+Tras ejecutar este ejercicio sobre Metric-FF obtenemos el siguiente plan (debido a la complejidad y longitud del plan solo muestro la parte final, para comprobar que se recolectan los recursos correctamente y se llega a reclutar al segador, la unidad más compleja debido a la necesidad de investigar): 
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{plan6.png}
+	\caption{Plan obtenido en el ejercicio 6.}
+	\label{plan6}
+\end{figure}
 
-
-
+Cabe destacar que debido a la complejidad que ha tomado este ejercicio, ahora son necesarios unos 10/15 segundos para que el planificador encuentre solución.
 
 
 \section{Ejercicio 7}
 
+Aunque el ejercicio 7 ha sido retirado de la práctica, cuando se nos aviso de esto ya tenía la codificación lista y funcional, por lo que lo he añadido en la entrega. No realizaré una explicación en profundidad por falta de espacio, pero simplemente se han añadido funciones para saber el tiempo necesario de cada acción y una función para contar el tiempo, cada vez que se realiza una acción se suma el tiempo necesario en el tiempo transcurrido en el fichero de dominio. En el fichero de problema inicializamos los tiempos necesarios y el transcurrido, y en lugar de usar la métrica por defecto uso la métrica \texttt{:metric minimize (tiempoTranscurrido)} para que Metric-FF trate de encontrar el plan con el valor mínimo esta función.
 
-\subsection{Dominio:}
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{usoMetrica.png}
+	\caption{Ejecución de Metric-FF con la nueva métrica.}
+	\label{plan7me}
+\end{figure}
 
-\subsection{Problema:}
-
-\subsection{Solución:}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{plan7.png}
+	\caption{Plan obtenido en el ejercicio 7, coste del tiempo.}
+	\label{plan7}
+\end{figure}
 
 \end{document}
