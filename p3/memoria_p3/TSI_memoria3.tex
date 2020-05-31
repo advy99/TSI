@@ -13,6 +13,8 @@
 \usepackage{float}
 \usepackage{chngpage}
 
+\usepackage{multicol}
+
 \usepackage{subcaption}
 
 \usepackage{hyperref}
@@ -173,8 +175,6 @@ El objetivo de esta práctica consiste en diseñar e implementar un dominio de p
 
 En el dominio declararemos todos los requisitos, tipos, constantes, funciones, predicados y acciones que se podrá tener o realizar nuestro mundo, mientras que en el problema declararemos objetos, especificaremos su estado inicial en el mundo basándonos en el dominio y estableceremos una meta. El objetivo de cada ejercicio es obtener un plan para que en el mundo basado en el dominio se cumpla dicha meta.
 
-Cada ejercicio está basado en el anterior, por lo que los ficheros estarán basados e incluirán todo lo del ejercicio anterior a no ser que se especifique que se ha modificado.  Aun así, para distinguir el dominio y problema de cada ejercicio usare como nombre de dominio ejercicio\_N y como nombre del problema ejercicioN, por ejemplo, para el ejercicio 1 el dominio se llamará ejercicio\_1 y el problema será problema1.
-
 \section{Ejercicio 1}
 
 Para este ejercicio implementaré toda la base que utilizaremos para el resto de los ejercicios, por lo que el resto de ejercicios serán modificaciones del ejercicio anterior. 
@@ -190,34 +190,45 @@ Para empezar, al definir el fichero de dominio declararemos los requisitos del d
 
 Tras esto definimos los tipos que se nos pide para desarrollar la práctica. Usaremos los siguientes tipos que definiremos en la sección \texttt{:types}:
 
-\begin{enumerate}
-	\item localizacion: subtipo de object
+\begin{multicols}{2}
+\begin{itemize}
+  \setlength{\parskip}{0pt}
+  	\item localizacion: subtipo de object
 	\item entidad: subtipo de object
 	\item recurso: subtipo de object
 	\item edificio: subtipo de entidad
+\end{itemize}
+
+
+\begin{itemize}
+  \setlength{\parskip}{0pt}
 	\item unidad: subtipo de entidad
 	\item tipoRecurso: subtipo de recurso
 	\item tipoEdificio: subtipo de edificio
 	\item tipoUnidad: subtipo de unidad
-\end{enumerate}
+\end{itemize}
+\end{multicols}
 
-Los edificios y unidades, al poder estar posicionadas en distintas localizaciones y como, veremos en los siguientes ejercicios, tener predicados en común, serán ambos un subtipo de entidad, de forma que, por ejemplo, para saber si un edificio o una unidad está en una localización utilizaremos el tipo entidad para referirnos a cualquiera de estos dos tipos.
+Los edificios y unidades serán ambos un subtipo de entidad, de forma que, por ejemplo, para saber si un edificio o una unidad está en una localización utilizaremos el tipo entidad para referirnos a cualquiera de estos dos tipos.
 
 Al hacer uso de constantes para referirnos a las clases en las acciones y algunos predicados usaremos las clases que tienen prefijo tipo, esto lo haremos para enlazar las constantes con los objetos del problema y así poder generalizar en lugar de generar muchos objetos en el problema cuando podemos referirnos a estos como constantes.
 
 
 \subsubsection{Constantes:}
 
-Definidas en la sección \texttt{:constants}. Utilizaremos constantes para en el dominio poder referirnos a todos los objetos de un tipo, evitando tener que declarar los objetos en el problema y por tanto obtener una solución más generalizada para los problemas, las constantes que usaremos serán:
+\begin{multicols}{2}
+
+Definidas en la sección \texttt{:constants}. Utilizadas para en el dominio poder referirnos a todos los objetos de un tipo, evitando declarar objetos en el problema y obtener una solución más generalizada para los problemas, las constantes que usaremos serán:
 
 \begin{enumerate}
+  \setlength{\parskip}{0pt}
 	\item VCE: de tipo tipoUnidad
 	\item CentroDeMando: de tipo tipoEdificio
 	\item Barracones: de tipo tipoEdificio
 	\item Mineral: de tipo tipoRecurso
 	\item Gas: de tipo tipoRecurso
 \end{enumerate}
-
+\end{multicols}
 
 \subsubsection{Predicados:}
 
@@ -257,7 +268,7 @@ El fichero del problema se compone de cinco partes esenciales:
 
 \subsubsection{Dominio:}
 
-Se representa usando \texttt{(:domain dominio)} en PDDL. Esta sección indica el dominio donde estará definido el problema, en nuestro caso será el dominio ejercicio\_1.
+Se representa usando \texttt{(:domain dominio)} en PDDL. Esta sección indica el dominio donde estará definido el problema, en nuestro caso será el dominio ejercicio\_1. Los ejercicios están basados unos en otros, luego usaré ejercicio\_N para representar el dominio del ejercicio N.
 
 \subsubsection{Objetos:}
 
@@ -276,7 +287,7 @@ Se representa usando \texttt{:init} en PDDL. En esta sección declararemos el es
 
 Para empezar representaremos todas las conexiones entre localizaciones. Para esto hemos usado el editor online de PDDL haciendo uso de la extensión propuesta en los foros de dudas para la práctica en PRADO.
 
-Además hemos establecido posiciones iniciales arbitrarias para las tres unidades VCE y el centro de mando, así como establecido los nodos de recursos. Las posiciones de los recursos las hemos establecido haciendo uso de las constantes, de forma que no es necesario declarar tres minerales y dos objetos de tipo gas. También he establecido el tipo de las unidades y los edificios usados para enlazarlos con sus constantes, así como los recursos que necesita cada edificio según nos marca el guión.
+Hemos establecido posiciones arbitrarias de lo tres VCE y centro de mando, así como los nodos de recursos usando las constantes y los tipos de los edificios y unidades según marca el guión con el uso de los predicados.
 
 Todo esto se realiza con los predicados del dominio, explicados en los apartados anteriores.
 
@@ -291,14 +302,18 @@ Se representa usando \texttt{:metric} en PDDL. En principio no utilizaremos esta
 
 \subsection{Solución:}
 
+\begin{multicols}{2}
+
 Tras declarar el dominio y el problema, al ejecutar los ficheros PDDL sobre Metric-FF obtenemos el siguiente plan:
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{plan1.png}
+	\vspace*{-1cm}\includegraphics[scale=0.3]{plan1.png}
 	\caption{Plan obtenido en el ejercicio 1.}
 	\label{plan1}
 \end{figure}
+
+\end{multicols}
 
 \section{Ejercicio 2}
 
@@ -316,13 +331,7 @@ Se ha añadido una nueva constante para representar el nuevo edificio: Extractor
 
 Se ha modificado la acción Asignar. Ahora recibe un nuevo parámetro ?edi - edificio. Este parámetro lo usaremos para comprobar que si se va a extraer Gas, en la localización existe el edificio dado por parámetro y es un edificio Extractor.
 
-Para comprobar esta nueva precondición usaremos la orden imply, equivalente al operador lógico de la implicación:
-
-\begin{lstlisting}
-(imply (a) (b) )
-\end{lstlisting}
-
-Utilizar este operador es equivalente a realizar la comprobación $\neg a \lor b$. En nuestro caso $a$ será  (asignarNodoRecursoLocalzizacion Gas ?x), de forma que si en la localización no hay un nodo de Gas no tiene porque cumplirse $b$, sin embargo, si es Gas se tiene que cumplir $b$, que será (and (entidadEnLocalizacion ?edi ?x) (esEdificio ?edi Extractor) para comprobar que tenemos el edificio dado en la localización, y ese edificio es de tipo Extractor.
+Para comprobar esta nueva precondición usaremos la orden imply, equivalente al operador lógico de la implicación. Este operador es equivalente a realizar la comprobación $\neg a \lor b$. En nuestro caso $a$ será  (asignarNodoRecursoLocalzizacion Gas ?x), de forma que si en la localización no hay un nodo de Gas no tiene porque cumplirse $b$, sin embargo, si es Gas se tiene que cumplir $b$, que será (and (entidadEnLocalizacion ?edi ?x) (esEdificio ?edi Extractor) para comprobar que tenemos el edificio dado en la localización, y ese edificio es de tipo Extractor.
 
 \subsection{Problema:}
 
@@ -340,25 +349,32 @@ El objetivo de este ejercicio es el mismo que el del ejercicio anterior. Debido 
 
 \subsection{Solución:}
 
+\begin{multicols}{2}
+
 Tras ejecutarlo con Metric-FF obtenemos:
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{plan2.png}
+	\vspace*{-1cm}\includegraphics[scale=0.3]{plan2.png}
 	\caption{Plan obtenido en el ejercicio 2.}
 	\label{plan2}
 \end{figure}
+
+\end{multicols}
+
+\begin{multicols}{2}
 
 Y como vemos, al no extraer Gas, no construye el extractor, para comprobar que funciona he realizado una modificación en la meta (la versión entregada tiene la meta pedida en el guión, no esta modificación):
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{plan2Gas.png}
+	\includegraphics[scale=0.3]{plan2Gas.png}
 	\caption{Plan obtenido en el ejercicio 2 con la meta modificada.}
 	\label{plan2Gas}
 \end{figure}
+\end{multicols}
 
 Y podemos ver como antes de extraer Gas es construido el Extractor.
 
@@ -392,27 +408,34 @@ El objetivo de este ejercicio es el mismo que el de ejercicios anteriores. Debid
 
 \subsection{Solución:}
 
+\begin{multicols}{2}
+
 Tras ejecutarlo con Metric-FF obtenemos:
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{plan3.png}
+	\vspace*{-1cm}\includegraphics[scale=0.2]{plan3.png}
 	\caption{Plan obtenido en el ejercicio 3.}
 	\label{plan3}
 \end{figure}
 
-Para comprobar que funciona he realizado una modificación en la meta como he comentado (la versión entregada tiene la meta pedida en el guión, no esta modificación):
+\end{multicols}
 
+
+\begin{multicols}{2}
+He realizado una prueba para comprobar que funciona. (la versión entregada tiene la meta pedida en el guión, no esta modificación).
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{plan3C.png}
+	\includegraphics[scale=0.2]{plan3C.png}
 	\caption{Plan obtenido en el ejercicio 3 con la meta modificada.}
 	\label{plan3C}
 \end{figure}
 
-Como vemos, antes de construir el centro de mando el VCE1 comienza a extraer mineral, el VCE2 construye un extractor y pasa a extraer Gas y por último el VCE3 pasa a construir el nuevo centro de mando.
+
+
+\end{multicols}
 
 \section{Ejercicio 4}
 
@@ -456,16 +479,18 @@ Este ejercicio tiene como meta tener dos marines y un segador en posiciones arbi
 
 \subsection{Solución:}
 
-Tras ejecutar los archivos de dominio y problema sobre Metric-FF obtenemos el siguiente plan. Como nota añadir que debido a la longitud del plan, en la imagen he eliminado las acciones que simplemente son navegar por el mapa para que se vea más claramente que acciones está realizando.
+\begin{multicols}{2}
+
+Tras ejecutar el ejercicio en Metric-FF obtenemos el siguiente plan. Debido a la longitud del plan, en la imagen he eliminado las acciones de navegar por el mapa para que se vea más claro que acciones está realizando.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{plan4.png}
+	\includegraphics[scale=0.3]{plan4.png}
 	\caption{Plan obtenido en el ejercicio 4.}
 	\label{plan4}
 \end{figure}
 
-
+\end{multicols}
 
 
 
@@ -513,17 +538,20 @@ La meta es la misma que en el ejercicio anterior, tener dos marines y un segador
 
 \subsection{Solución:}
 
-Tras lanzar Metric-FF obtenemos el siguiente plan (de nuevo, debido a la longitud he eliminado las acciones navegar de la imagen, al ser simplemente unidades moviéndose)  :
+\begin{multicols}{2}
+
+Tras lanzar Metric-FF obtenemos el siguiente plan (por la longitud he eliminado las acciones navegar de la imagen, al ser simplemente unidades moviéndose)  :
 
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{plan5.png}
+	\vspace*{-1cm}\includegraphics[scale=0.2]{plan5.png}
 	\caption{Plan obtenido en el ejercicio 5.}
 	\label{plan5}
 \end{figure}
 
+\end{multicols}
 
 
 \section{Ejercicio 6}
@@ -583,33 +611,37 @@ Para este ejercicio tenemos la misma meta, tener dos marines y un segador.
 
 \subsection{Solución:}
 
+\begin{multicols}{2}
+
 Tras ejecutar este ejercicio sobre Metric-FF obtenemos el siguiente plan (debido a la complejidad y longitud del plan solo muestro la parte final, para comprobar que se recolectan los recursos correctamente y se llega a reclutar al segador, la unidad más compleja debido a la necesidad de investigar): 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{plan6.png}
+	\vspace*{-1cm}\includegraphics[scale=0.3]{plan6.png}
 	\caption{Plan obtenido en el ejercicio 6.}
 	\label{plan6}
 \end{figure}
 
+\end{multicols}
 Cabe destacar que debido a la complejidad que ha tomado este ejercicio, ahora son necesarios unos 10/15 segundos para que el planificador encuentre solución.
 
 
 \section{Ejercicio 7}
+
 
 Aunque el ejercicio 7 ha sido retirado de la práctica, cuando se nos aviso de esto ya tenía la codificación lista y funcional, por lo que lo he añadido en la entrega. No realizaré una explicación en profundidad por falta de espacio, pero simplemente se han añadido funciones para saber el tiempo necesario de cada acción y una función para contar el tiempo, cada vez que se realiza una acción se suma el tiempo necesario en el tiempo transcurrido en el fichero de dominio. En el fichero de problema inicializamos los tiempos necesarios y el transcurrido, y en lugar de usar la métrica por defecto uso la métrica \texttt{:metric minimize (tiempoTranscurrido)} para que Metric-FF trate de encontrar el plan con el valor mínimo esta función.
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{usoMetrica.png}
+	\includegraphics[scale=0.3]{usoMetrica.png}
 	\caption{Ejecución de Metric-FF con la nueva métrica.}
 	\label{plan7me}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{plan7.png}
+	\includegraphics[scale=0.3]{plan7.png}
 	\caption{Plan obtenido en el ejercicio 7, coste del tiempo.}
 	\label{plan7}
 \end{figure}
