@@ -1,4 +1,4 @@
-\documentclass[11pt, spanish]{article}
+\documentclass[10pt, spanish]{article}
 \usepackage[spanish]{babel}
 \selectlanguage{spanish}
 \usepackage{natbib}
@@ -179,7 +179,7 @@ Cada ejercicio está basado en el anterior, por lo que los ficheros estarán bas
 
 Para este ejercicio implementaré toda la base que utilizaremos para el resto de los ejercicios, por lo que el resto de ejercicios serán modificaciones del ejercicio anterior. 
 
-En este ejercicio se nos pide representar los tipos básicos, constantes para referirnos a algunos de esos tipos, distintos predicados y tres acciones distintas, todo esto lo comentaré más en detalle en el desarrollo de su implementación. Una vez que tengamos dicho dominio definido se nos pide crear un problema de un mapa 5x5 donde se encuentre un centro de mando, tres unidades VCE, tres nodos de Mineral y dos de Gas. Se nos pide como objetivo construir un edificio Barracones.
+En este ejercicio representaremos los tipos básicos, constantes, distintos predicados y tres acciones distintas, todo esto lo comentaré más en detalle en el desarrollo de su implementación. Una vez que tengamos dicho dominio definido se nos pide crear un problema de un mapa 5x5 donde se encuentre un centro de mando, tres unidades VCE, tres nodos de Mineral y dos de Gas. Se nos pide como objetivo construir un edificio Barracones.
 
 
 \subsection{Dominio}
@@ -471,16 +471,55 @@ Tras ejecutar los archivos de dominio y problema sobre Metric-FF obtenemos el si
 
 \section{Ejercicio 5}
 
+En este ejercicio se nos pide añadir un nuevo elemento, las investigaciones, que serán realizadas en el nuevo edificio, la Bahia de Ingeniería. Además para poder reclutar a los Segadores será necesario tener la investigación Impulsor Segador.
 
 \subsection{Dominio:}
+
+\subsubsection{Tipos:}
+
+Para este ejercicio añadimos un tipo nuevo investigación, subtipo de entidad, así como el tipo tipoInvestigacion, subtipo de investigación, para referirnos a las posibles investigaciones.
+
+\subsubsection{Constantes:}
+
+Se ha añadido una constante para representar la investigación ImpulsorSegador, de tipo tipoInvestigacion.
+
+\subsubsection{Predicados:}
+
+Se han añadido dos predicados, esInvestigacion, para enlazar los objetos investigacion con las constantes y (heInvestigado ?inv - investigacion), para representar que ya se ha realizado cierta investigación
+
+\subsubsection{Acciones:}
+
+Se ha modificado la acción Reclutar, ahora si es un segador, además de comprobar que se extraen los recursos necesarios comprueba que se tenga la investigación de tipo ImpulsorSegador.
+
+Se ha añadido la acción Investigar. Como parámetros tiene la investigación a investigar y el edificio donde investigar. Como precondiciones, el edificio a investigar es BahiaIngenieria,  y tiene que existir una localización donde esté (tiene que estar construido). No se tiene que tener investigado la investigación a llevar a cabo, y de forma similar a la forma de construir, comprobamos que se tienen todos los recursos necesarios para la investigación haciendo uso de la orden forall. Como efecto representamos que se ha llevado a cabo la investigación con con el predicado (heInvestigado ?inves).
 
 
 \subsection{Problema:}
 
+\subsubsection{Objetos:}
+
+En los objetos añadimos tanto el edificio de bahía de ingeniería a construir como la investigación del impulsor.
+
+\subsubsection{Estado inicial:}
+
+En el estado inicial añadimos la inicialización de los nuevos objetos, enlazando la investigación y la bahía con sus respectivas constantes.
+
+\subsubsection{Meta:}
+
+La meta es la misma que en el ejercicio anterior, tener dos marines y un segador en posiciones arbitrarias.
+
 \subsection{Solución:}
 
+Tras lanzar Metric-FF obtenemos el siguiente plan (de nuevo, debido a la longitud he eliminado las acciones navegar de la imagen, al ser simplemente unidades moviéndose)  :
 
 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{plan5.png}
+	\caption{Plan obtenido en el ejercicio 5.}
+	\label{plan5}
+\end{figure}
 
 
 
