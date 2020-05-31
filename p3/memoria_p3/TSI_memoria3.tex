@@ -347,7 +347,7 @@ Tras ejecutarlo con Metric-FF obtenemos:
 	\centering
 	\includegraphics[scale=0.4]{plan2.png}
 	\caption{Plan obtenido en el ejercicio 2.}
-	\label{plan1}
+	\label{plan2}
 \end{figure}
 
 Y como vemos, al no extraer Gas, no construye el extractor, para comprobar que funciona he realizado una modificación en la meta (la versión entregada tiene la meta pedida en el guión, no esta modificación):
@@ -357,14 +357,62 @@ Y como vemos, al no extraer Gas, no construye el extractor, para comprobar que f
 	\centering
 	\includegraphics[scale=0.4]{plan2Gas.png}
 	\caption{Plan obtenido en el ejercicio 2 con la meta modificada.}
-	\label{plan1}
+	\label{plan2Gas}
 \end{figure}
 
 Y podemos ver como antes de extraer Gas es construido el Extractor.
 
 \section{Ejercicio 3}
 
-En este ejercicio tenemos que modificar la acción Construir para tener en cuenta que un edificio puede necesitar varios recursos.
+En este ejercicio tenemos que modificar la acción Construir para tener en cuenta que un edificio puede necesitar varios recursos, así como que solo es necesario marcar el tipo de edificio en el predicado para establecer las necesidades de recursos al construir.
+
+\subsection{Dominio:}
+
+Para este ejercicio solo hay que modificar las acciones y un predicado.
+
+\subsubsection{Predicados:}
+
+Se ha modificado el predicado necesitaRecurso, ahora el primer parámetro es de tipo tipoEdificio, para que solo acepte constantes. En los ejercicios anteriores se hacía con constantes, pero era posible que se usara un objeto de tipo edificio y no las constantes.
+
+\subsubsection{Acciones:}
+
+Modificaré la acción Construir. Ahora solo recibirá tres parámetros, la unidad, la localización y el edificio, en lugar de cuatro, eliminando el parámetro del recurso.
+
+También se ha modificado la precondición, ahora en lugar de comprobar que se necesita el recurso dado y este se está extrayendo, tenemos una estructura forall, en la que comprobaremos para todos los tipoRecurso del dominio, si existe un tipoEdificio tal que el edificio a construir es de dicho tipo, y usando la orden imply, si ese tipo edificio necesita el tipo de recurso este se tiene que estar extrayendo.
+
+\subsection{Problema:}
+
+\subsubsection{Estado inicial:}
+
+En el estado inicial se han añadido predicados para actualizar las necesidades de los edificios, de forma que como dice el guión, el centro de mando necesite tanto mineral como gas para ser construido. Al estar haciendo uso de las constantes desde un principio no ha sido necesario actualizar las necesidades de los edificios que tenemos del ejercicio anterior.
+
+\subsubsection{Meta:}
+
+El objetivo de este ejercicio es el mismo que el de ejercicios anteriores. Debido a que para construir los barracones no comprobamos si se realiza correctamente el construir con varios recursos, he realizado pruebas usando de meta que el objetivo sea construir otro centro de mando (añadido previamente en la sección de objetos y estado inicial para inicializarlo) para comprobar que funciona.
+
+\subsection{Solución:}
+
+Tras ejecutarlo con Metric-FF obtenemos:
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{plan3.png}
+	\caption{Plan obtenido en el ejercicio 3.}
+	\label{plan3}
+\end{figure}
+
+Para comprobar que funciona he realizado una modificación en la meta como he comentado (la versión entregada tiene la meta pedida en el guión, no esta modificación):
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{plan3C.png}
+	\caption{Plan obtenido en el ejercicio 3 con la meta modificada.}
+	\label{plan3C}
+\end{figure}
+
+Como vemos, antes de construir el centro de mando el VCE1 comienza a extraer mineral, el VCE2 construye un extractor y pasa a extraer Gas y por último el VCE3 pasa a construir el nuevo centro de mando.
 
 \section{Ejercicio 4}
 
